@@ -9,7 +9,6 @@ class KepalaLaporanController extends Controller
 {
     public function index()
     {
-        // Nanti Anda akan mengambil data ini dari database (analytics, etc.)
         // Untuk sekarang, kita pakai data dummy
         $stats = [
             'total_sesi' => '1,240',
