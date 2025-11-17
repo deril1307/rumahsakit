@@ -45,7 +45,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
          ->name('admin.laporan.index');
 
     Route::get('/admin/pasien', [AdminDashboardController::class, 'pasienIndex'])->name('admin.pasien.index');
-    Route::get('/admin/terapis', [AdminDashboardController::class, 'terapisIndex'])->name('admin.terapis.index');
+
+   
+     Route::get('/admin/terapis', [AdminDashboardController::class, 'terapisIndex'])->name('admin.terapis.index');
+     Route::post('/admin/terapis', [AdminDashboardController::class, 'terapisStore'])->name('admin.terapis.store');
 });
 
 // --- HALAMAN KHUSUS TERAPIS ---

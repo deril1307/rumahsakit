@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 use PDF;
 
@@ -67,7 +68,7 @@ class AdminDashboardController extends Controller
     }
 
 
-    // fungsi cetak jadwal (masih dummy)
+    // fungsi untuk menangani cetak jadwal (dummy)
     public function cetakJadwal($id_pasien)
     {
         $data = [
@@ -107,6 +108,7 @@ class AdminDashboardController extends Controller
         return $pdf->stream('jadwal-pasien-'.$data['no_rm'].'.pdf');
     }
 
+    // fungsi untuk menangani laporan (dummy)
     public function laporanIndex()
     {
         // Data dummy ini diambil persis dari gambar Anda
@@ -125,6 +127,7 @@ class AdminDashboardController extends Controller
     }
 
 
+    // fungsi untuk menangani pasien (dummy)
     public function pasienIndex()
     {
         // Data dummy dari gambar Anda
@@ -139,10 +142,54 @@ class AdminDashboardController extends Controller
         ]);
     }
 
+    // fungsi untuk menangani terapis (on progress)
     public function terapisIndex()
     {
-        // Untuk sementara, kita tampilkan view-nya saja
-        // Nanti Anda bisa isi dengan data dummy terapis
-        return view('admin.terapis-index');
+        // 1. Ambil data terapis dari DB
+        $terapisList = User::role('terapis')->get();
+        // 2. Siapkan opsi Spesialisasi (Bisa dari DB atau Array statis dulu)
+        $spesialisasiOptions = [
+            'Fisioterapi',
+            'Terapi Okupasi',
+            'Terapi Wicara',
+            'Fisioterapi Anak',
+            'Fisioterapi Stroke'
+        ];
+
+        return view('admin.terapis-index', [
+            'terapisList' => $terapisList,
+            'spesialisasiOptions' => $spesialisasiOptions 
+        ]);
+    }
+
+    /**
+     * Simpan Terapis Baru 
+     */
+    public function terapisStore(Request $request)
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'nip' => 'required|string|max:20',
+            'spesialisasi' => 'required|string',
+            'no_telp' => 'required|string|max:15',
+        ]);
+
+        // 2. Buat User Baru
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'nip' => $request->nip,
+            'spesialisasi' => $request->spesialisasi,
+            'no_telp' => $request->no_telp,
+            'status' => 'Aktif',
+            'password' => Hash::make('12345678'), // <--- PASSWORD DEFAULT
+        ]);
+        // 3. Berikan Role Terapis
+        $user->assignRole('terapis');
+        // 4. Redirect kembali
+        return redirect()->route('admin.terapis.index')
+                         ->with('success', 'Terapis berhasil ditambahkan!');
     }
 }
