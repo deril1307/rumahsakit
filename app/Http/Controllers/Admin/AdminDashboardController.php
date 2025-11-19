@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Pasien;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
@@ -127,20 +128,7 @@ class AdminDashboardController extends Controller
     }
 
 
-    // fungsi untuk menangani pasien (dummy)
-    public function pasienIndex()
-    {
-        // Data dummy dari gambar Anda
-        $pasienData = [
-            (object)['nama' => 'Amelia Tan', 'no_rm' => '00123456', 'no_telp' => '081234567890', 'status' => 'Aktif'],
-            (object)['nama' => 'Budi Santoso', 'no_rm' => '00123457', 'no_telp' => '081234567891', 'status' => 'Aktif'],
-            (object)['nama' => 'Citra Dewi', 'no_rm' => '00123458', 'no_telp' => '081234567892', 'status' => 'Nonaktif'],
-        ];
-
-        return view('admin.pasien-index', [
-            'pasienList' => $pasienData
-        ]);
-    }
+    
 
     // fungsi untuk menangani terapis (on progress)
     public function terapisIndex()
@@ -260,5 +248,61 @@ class AdminDashboardController extends Controller
 
         return redirect()->route('admin.terapis.index')
                          ->with('deleted', 'Terapis berhasil dihapus.');
+    }
+
+
+
+
+
+    // --- INDEX (TAMPILKAN) ---
+    // fungsi untuk menangani pasien (dummy)
+    public function pasienIndex()
+    {
+        $pasienList = Pasien::latest()->get(); 
+        return view('admin.pasien-index', compact('pasienList'));
+    
+    }
+    
+    // --- STORE (TAMBAH BARU) ---
+    public function pasienStore(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_rm' => 'required|string|unique:pasiens,no_rm',
+            'tgl_lahir' => 'required|date',
+            'jenis_kelamin' => 'required',
+            'no_telp' => 'required',
+            'alamat' => 'required',
+        ]);
+
+        Pasien::create($request->all());
+        return redirect()->back()->with('success', 'Data Pasien berhasil ditambahkan.');
+    }
+
+    // --- UPDATE (EDIT) ---
+    public function pasienUpdate(Request $request, $id)
+    {
+        $pasien = Pasien::findOrFail($id);
+
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_rm' => 'required|string|unique:pasiens,no_rm,'.$pasien->id, // Abaikan ID ini saat cek unique
+            'tgl_lahir' => 'required|date',
+            'jenis_kelamin' => 'required',
+            'no_telp' => 'required',
+        ]);
+
+        $pasien->update($request->all());
+
+        return redirect()->back()->with('updated', 'Data Pasien berhasil diperbarui.');
+    }
+
+    // --- DESTROY (HAPUS) ---
+    public function pasienDestroy($id)
+    {
+        $pasien = Pasien::findOrFail($id);
+        $pasien->delete();
+
+        return redirect()->back()->with('deleted', 'Data Pasien berhasil dihapus.');
     }
 }
