@@ -45,10 +45,6 @@
                     >
                 </div>
 
-                {{-- ============================================= --}}
-                {{-- ==              KODE BARU SELESAI            == --}}
-                {{-- ============================================= --}}
-
                 {{-- Judul Proyek --}}
                 <div class="flex justify-center">
                     <h1 class="text-5xl font-bold text-gray-900 text-center">
