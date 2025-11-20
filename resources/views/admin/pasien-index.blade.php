@@ -6,7 +6,7 @@
     </x-slot>
 
     {{-- 
-        LOGIKA ALPINE.JS (Satu Modal untuk Tambah & Edit)
+        LOGIKA ALPINE.JS (Satu Modal untuk Tambah & Edit + Modal Hapus)
     --}}
     <div x-data="{ 
         showModal: {{ $errors->any() ? 'true' : 'false' }},
@@ -66,19 +66,16 @@
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{{ session('deleted') }}</div>
                 @endif
 
-                <!-- CARD: Filter & Tambah -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="flex flex-wrap justify-between items-center gap-4">
-                            <!-- Search -->
-                            <div class="flex-grow sm:flex-grow-0 sm:w-1/2 relative">
+                            <form method="GET" action="{{ route('admin.pasien.index') }}" class="flex-grow sm:flex-grow-0 sm:w-1/2 relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                 </div>
-                                <x-text-input type="text" class="w-full pl-10" placeholder="Cari Nama / No. RM" />
-                            </div>
+                                <x-text-input type="text" name="search" value="{{ request('search') }}" class="w-full pl-10" placeholder="Cari Nama / No. RM (Enter)" />
+                            </form>
                             
-                            <!-- Tombol Tambah -->
                             <div class="flex items-center space-x-2">
                                 <button @click="openAddModal()" class="inline-flex items-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800 focus:bg-green-700 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -89,7 +86,6 @@
                     </div>
                 </div>
 
-                <!-- CARD: Tabel Pasien -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="overflow-x-auto">
@@ -144,9 +140,12 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <div class="mt-4">
+                            {{ $pasienList->links() }}
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -170,14 +169,12 @@
                             @csrf
                             <input type="hidden" name="_method" value="PUT" :disabled="!isEdit">
 
-                            <!-- Nama Lengkap -->
                             <div class="mb-4">
                                 <x-input-label for="nama" :value="__('Nama Lengkap')" />
                                 <x-text-input x-model="form.nama" id="nama" class="block mt-1 w-full" type="text" name="nama" required />
                                 <x-input-error :messages="$errors->get('nama')" class="mt-2" />
                             </div>
 
-                            <!-- No Rekam Medis -->
                             <div class="mb-4">
                                 <x-input-label for="no_rm" :value="__('No. Rekam Medis')" />
                                 <x-text-input x-model="form.no_rm" id="no_rm" class="block mt-1 w-full" type="text" name="no_rm" required />
@@ -185,13 +182,11 @@
                             </div>
 
                             <div class="grid grid-cols-2 gap-4 mb-4">
-                                <!-- Tanggal Lahir -->
                                 <div>
                                     <x-input-label for="tgl_lahir" :value="__('Tanggal Lahir')" />
                                     <x-text-input x-model="form.tgl_lahir" id="tgl_lahir" class="block mt-1 w-full" type="date" name="tgl_lahir" required />
                                     <x-input-error :messages="$errors->get('tgl_lahir')" class="mt-2" />
                                 </div>
-                                <!-- Jenis Kelamin -->
                                 <div>
                                     <x-input-label for="jenis_kelamin" :value="__('Jenis Kelamin')" />
                                     <select x-model="form.jenis_kelamin" id="jenis_kelamin" name="jenis_kelamin" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
@@ -201,25 +196,21 @@
                                 </div>
                             </div>
 
-                            <!-- Alamat -->
                             <div class="mb-4">
                                 <x-input-label for="alamat" :value="__('Alamat')" />
                                 <textarea x-model="form.alamat" id="alamat" name="alamat" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="2"></textarea>
                             </div>
 
-                            <!-- Nomor Telepon -->
                             <div class="mb-4">
                                 <x-input-label for="no_telp" :value="__('Nomor Telepon')" />
                                 <x-text-input x-model="form.no_telp" id="no_telp" class="block mt-1 w-full" type="text" name="no_telp" required />
                             </div>
 
-                            <!-- Alergi/Riwayat Medis -->
                             <div class="mb-4">
                                 <x-input-label for="riwayat_medis" :value="__('Alergi/Riwayat Medis Penting')" />
                                 <textarea x-model="form.riwayat_medis" id="riwayat_medis" name="riwayat_medis" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="2" placeholder="Tidak ada alergi obat yang diketahui."></textarea>
                             </div>
 
-                            <!-- Status (Hanya tampil saat Edit) -->
                             <div class="mb-4" x-show="isEdit">
                                 <x-input-label for="status" :value="__('Status')" />
                                 <select x-model="form.status" id="status" name="status" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">

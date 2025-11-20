@@ -256,11 +256,28 @@ class AdminDashboardController extends Controller
 
     // --- INDEX (TAMPILKAN) ---
     // fungsi untuk menangani pasien (dummy)
-    public function pasienIndex()
+    public function pasienIndex(Request $request)
     {
-        $pasienList = Pasien::latest()->get(); 
-        return view('admin.pasien-index', compact('pasienList'));
-    
+        // Mulai query dari model Pasien
+        $query = Pasien::query();
+
+        // Cek apakah ada input pencarian ('search')
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            
+            // Filter berdasarkan Nama ATAU No. RM
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('no_rm', 'like', "%{$search}%");
+            });
+        }
+
+        // Ambil data dengan pagination (10 per halaman) agar tidak lag
+        $pasienList = $query->latest()->paginate(10)->withQueryString();
+
+        return view('admin.pasien-index', [
+            'pasienList' => $pasienList
+        ]);
     }
     
     // --- STORE (TAMBAH BARU) ---
