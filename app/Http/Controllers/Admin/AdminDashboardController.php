@@ -134,78 +134,6 @@ class AdminDashboardController extends Controller
 
      */
 
-<<<<<<< Updated upstream
-        // Pilihan Spesialisasi (sama seperti di create)
-        $spesialisasiOptions = [
-            'Fisioterapi',
-            'Terapi Okupasi',
-            'Terapi Wicara',
-            'Fisioterapi Anak',
-            'Fisioterapi Stroke'
-        ];
-
-        return view('admin.terapis-edit', [
-            'terapis' => $terapis,
-            'spesialisasiOptions' => $spesialisasiOptions
-        ]);
-    }
-
-    /**
-     * Proses Update Data Terapis
-     */
-    public function terapisUpdate(Request $request, $id)
-    {
-        $terapis = User::findOrFail($id);
-
-        // Validasi
-        $request->validate([
-            'name' => 'required|string|max:255',
-            // Email harus unique, TAPI kecualikan ID terapis ini sendiri
-            'email' => 'required|string|email|max:255|unique:users,email,' . $terapis->id,
-            'nip' => 'required|string|max:20',
-            'spesialisasi' => 'required|string',
-            'no_telp' => 'required|string|max:15',
-            'status' => 'required|in:Aktif,Nonaktif',
-        ]);
-
-        // Update Data
-        $terapis->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'nip' => $request->nip,
-            'spesialisasi' => $request->spesialisasi,
-            'no_telp' => $request->no_telp,
-            'status' => $request->status,
-        ]);
-
-        return redirect()->route('admin.terapis.index')
-                         ->with('updated', 'Data Terapis berhasil diperbarui.');
-    }
-
-    /**
-     * Hapus Terapis
-     */
-    public function terapisDestroy($id)
-    {
-        $terapis = User::findOrFail($id);
-        $terapis->delete();
-
-        return redirect()->route('admin.terapis.index')
-                         ->with('deleted', 'Terapis berhasil dihapus.');
-    }
-
-
-
-
-
-    // --- INDEX (TAMPILKAN) ---
-    // fungsi untuk menangani pasien (dummy)
-    public function pasienIndex()
-    {
-        $pasienList = Pasien::latest()->get(); 
-        return view('admin.pasien-index', compact('pasienList'));
-    
-=======
     public function pasienIndex(Request $request)
 
     {
@@ -248,7 +176,6 @@ class AdminDashboardController extends Controller
 
         }
 
->>>>>>> Stashed changes
     }
 
 
