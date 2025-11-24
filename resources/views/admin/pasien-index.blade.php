@@ -10,17 +10,10 @@
 
     </x-slot>
 
-<<<<<<< Updated upstream
-    {{-- 
-        LOGIKA ALPINE.JS (Satu Modal untuk Tambah & Edit)
-    --}}
-    <div x-data="{ 
-=======
 
 
     <div x-data="{
     
->>>>>>> Stashed changes
         showModal: {{ $errors->any() ? 'true' : 'false' }},
     
         showDeleteModal: false,
@@ -147,9 +140,6 @@
                     </div>
                 @endif
 
-<<<<<<< Updated upstream
-                <!-- CARD: Filter & Tambah -->
-=======
 
 
                 {{-- Notifikasi Updated --}}
@@ -232,16 +222,11 @@
 
                 {{-- CARD: Filter & Tambah --}}
 
->>>>>>> Stashed changes
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
 
                     <div class="p-6 text-gray-900">
 
                         <div class="flex flex-wrap justify-between items-center gap-4">
-<<<<<<< Updated upstream
-                            <!-- Search -->
-                            <div class="flex-grow sm:flex-grow-0 sm:w-1/2 relative">
-=======
 
 
 
@@ -250,7 +235,6 @@
                             <form method="GET" action="{{ route('admin.pasien.index') }}"
                                 class="flex-grow sm:flex-grow-0 sm:w-1/2 relative">
 
->>>>>>> Stashed changes
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 
                                     <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
@@ -262,12 +246,6 @@
                                     </svg>
 
                                 </div>
-<<<<<<< Updated upstream
-                                <x-text-input type="text" class="w-full pl-10" placeholder="Cari Nama / No. RM" />
-                            </div>
-                            
-                            <!-- Tombol Tambah -->
-=======
 
                                 <input type="text" name="search" value="{{ request('search') }}"
                                     class="w-full pl-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
@@ -312,7 +290,6 @@
 
                             {{-- Tombol Tambah --}}
 
->>>>>>> Stashed changes
                             <div class="flex items-center space-x-2">
 
                                 <button @click="openAddModal()"
@@ -337,14 +314,10 @@
 
                 </div>
 
-<<<<<<< Updated upstream
-                <!-- CARD: Tabel Pasien -->
-=======
 
 
                 {{-- CARD: Tabel Pasien --}}
 
->>>>>>> Stashed changes
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
 
                     <div class="p-6 text-gray-900">
@@ -428,12 +401,6 @@
                                                 Aksi</th>
 
                                         </tr>
-<<<<<<< Updated upstream
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-=======
 
                                     </thead>
 
@@ -559,16 +526,12 @@
 
                         @endif
 
->>>>>>> Stashed changes
                     </div>
 
                 </div>
 
-<<<<<<< Updated upstream
-=======
 
 
->>>>>>> Stashed changes
             </div>
 
         </div>
@@ -620,20 +583,10 @@
 
                             <input type="hidden" name="_method" value="PUT" :disabled="!isEdit">
 
-<<<<<<< Updated upstream
-                            <!-- Nama Lengkap -->
-                            <div class="mb-4">
-                                <x-input-label for="nama" :value="__('Nama Lengkap')" />
-                                <x-text-input x-model="form.nama" id="nama" class="block mt-1 w-full" type="text" name="nama" required />
-                                <x-input-error :messages="$errors->get('nama')" class="mt-2" />
-                            </div>
-=======
 
 
                             {{-- Nama Lengkap --}}
->>>>>>> Stashed changes
 
-                            <!-- No Rekam Medis -->
                             <div class="mb-4">
 
                                 <x-input-label for="nama" :value="__('Nama Lengkap')" />
@@ -670,13 +623,9 @@
 
 
                             <div class="grid grid-cols-2 gap-4 mb-4">
-<<<<<<< Updated upstream
-                                <!-- Tanggal Lahir -->
-=======
 
                                 {{-- Tanggal Lahir --}}
 
->>>>>>> Stashed changes
                                 <div>
 
                                     <x-input-label for="tgl_lahir" :value="__('Tanggal Lahir')" />
@@ -689,13 +638,9 @@
                                     @enderror
 
                                 </div>
-<<<<<<< Updated upstream
-                                <!-- Jenis Kelamin -->
-=======
 
                                 {{-- Jenis Kelamin --}}
 
->>>>>>> Stashed changes
                                 <div>
 
                                     <x-input-label for="jenis_kelamin" :value="__('Jenis Kelamin')" />
@@ -713,14 +658,10 @@
 
                             </div>
 
-<<<<<<< Updated upstream
-                            <!-- Alamat -->
-=======
 
 
                             {{-- Alamat --}}
 
->>>>>>> Stashed changes
                             <div class="mb-4">
 
                                 <x-input-label for="alamat" :value="__('Alamat')" />
@@ -735,14 +676,10 @@
 
                             </div>
 
-<<<<<<< Updated upstream
-                            <!-- Nomor Telepon -->
-=======
 
 
                             {{-- Nomor Telepon --}}
 
->>>>>>> Stashed changes
                             <div class="mb-4">
 
                                 <x-input-label for="no_telp" :value="__('Nomor Telepon')" />
@@ -758,14 +695,10 @@
 
                             </div>
 
-<<<<<<< Updated upstream
-                            <!-- Alergi/Riwayat Medis -->
-=======
 
 
                             {{-- Riwayat Medis --}}
 
->>>>>>> Stashed changes
                             <div class="mb-4">
 
                                 <x-input-label for="riwayat_medis" :value="__('Alergi/Riwayat Medis Penting')" />
@@ -776,14 +709,10 @@
 
                             </div>
 
-<<<<<<< Updated upstream
-                            <!-- Status (Hanya tampil saat Edit) -->
-=======
 
 
                             {{-- Status (hanya muncul saat Edit) --}}
 
->>>>>>> Stashed changes
                             <div class="mb-4" x-show="isEdit">
 
                                 <x-input-label for="status" :value="__('Status')" />
