@@ -18,7 +18,8 @@ class DashboardController extends Controller
             return redirect()->route('terapis.dashboard');
 
         } elseif ($user->hasRole('kepala')) {
-           return redirect()->route('kepala.dashboard');;
+            return redirect()->route('kepala.dashboard');
+            ;
         }
 
         // Jika user tidak punya role (seharusnya tidak terjadi)

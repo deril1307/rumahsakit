@@ -20,12 +20,11 @@ use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Log;
 
-use Barryvdh\DomPDF\Facade\Pdf; // ← FIX: Import PDF facade yang benar
+use Barryvdh\DomPDF\Facade\Pdf; 
 
 
 
 class AdminDashboardController extends Controller
-
 {
 
     /**
@@ -35,7 +34,6 @@ class AdminDashboardController extends Controller
      */
 
     public function index()
-
     {
 
         return view('admin.dashboard');
@@ -53,7 +51,6 @@ class AdminDashboardController extends Controller
 
 
     public function usersIndex()
-
     {
 
         $users = User::with('roles')->get();
@@ -69,7 +66,6 @@ class AdminDashboardController extends Controller
 
 
     public function edit(User $user)
-
     {
 
         $roles = Role::all();
@@ -87,7 +83,6 @@ class AdminDashboardController extends Controller
 
 
     public function update(Request $request, User $user)
-
     {
 
         $request->validate(['role' => 'required|exists:roles,name']);
@@ -98,23 +93,22 @@ class AdminDashboardController extends Controller
 
         return redirect()->route('admin.users.index')
 
-                         ->with('success', 'Role user berhasil diupdate.');
+            ->with('success', 'Role user berhasil diupdate.');
 
     }
 
 
 
     public function destroy(User $user)
-
     {
 
         $user->delete();
 
-       
+
 
         return redirect()->route('admin.users.index')
 
-                         ->with('success', 'User berhasil dihapus.');
+            ->with('success', 'User berhasil dihapus.');
 
     }
 
@@ -135,24 +129,23 @@ class AdminDashboardController extends Controller
      */
 
     public function pasienIndex(Request $request)
-
     {
 
         try {
 
             $search = $request->input('search');
 
-           
+
 
             $pasienList = Pasien::query()
 
-                ->when($search, function($query, $search) {
+                ->when($search, function ($query, $search) {
 
                     return $query->where('nama', 'like', "%{$search}%")
 
-                                ->orWhere('no_rm', 'like', "%{$search}%")
+                        ->orWhere('no_rm', 'like', "%{$search}%")
 
-                                ->orWhere('no_telp', 'like', "%{$search}%");
+                        ->orWhere('no_telp', 'like', "%{$search}%");
 
                 })
 
@@ -162,11 +155,11 @@ class AdminDashboardController extends Controller
 
                 ->withQueryString();
 
-           
+
 
             return view('admin.pasien-index', compact('pasienList'));
 
-           
+
 
         } catch (\Exception $e) {
 
@@ -187,7 +180,6 @@ class AdminDashboardController extends Controller
      */
 
     public function pasienStore(Request $request)
-
     {
 
         try {
@@ -258,7 +250,7 @@ class AdminDashboardController extends Controller
 
             Pasien::create($validated);
 
-           
+
 
             Log::info('Pasien created', [
 
@@ -268,11 +260,11 @@ class AdminDashboardController extends Controller
 
             ]);
 
-           
+
 
             return redirect()->back()->with('success', 'Data Pasien berhasil ditambahkan.');
 
-           
+
 
         } catch (\Illuminate\Validation\ValidationException $e) {
 
@@ -305,7 +297,6 @@ class AdminDashboardController extends Controller
      */
 
     public function pasienUpdate(Request $request, $id)
-
     {
 
         try {
@@ -370,7 +361,7 @@ class AdminDashboardController extends Controller
 
             $pasien->update($validated);
 
-           
+
 
             Log::info('Pasien updated', [
 
@@ -384,7 +375,7 @@ class AdminDashboardController extends Controller
 
             return redirect()->back()->with('updated', 'Data Pasien berhasil diperbarui.');
 
-           
+
 
         } catch (\Illuminate\Validation\ValidationException $e) {
 
@@ -417,7 +408,6 @@ class AdminDashboardController extends Controller
      */
 
     public function pasienDestroy($id)
-
     {
 
         try {
@@ -426,11 +416,11 @@ class AdminDashboardController extends Controller
 
             $nama = $pasien->nama;
 
-           
+
 
             $pasien->delete();
 
-           
+
 
             Log::info('Pasien deleted', [
 
@@ -446,7 +436,7 @@ class AdminDashboardController extends Controller
 
             return redirect()->back()->with('deleted', 'Data Pasien berhasil dihapus.');
 
-           
+
 
         } catch (\Exception $e) {
 
@@ -475,26 +465,25 @@ class AdminDashboardController extends Controller
      */
 
     public function terapisIndex(Request $request)
-
     {
 
         try {
 
             $search = $request->input('search');
 
-           
+
 
             $terapisList = User::role('terapis')
 
-                ->when($search, function($query, $search) {
+                ->when($search, function ($query, $search) {
 
                     return $query->where('name', 'like', "%{$search}%")
 
-                                ->orWhere('nip', 'like', "%{$search}%")
+                        ->orWhere('nip', 'like', "%{$search}%")
 
-                                ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
 
-                                ->orWhere('spesialisasi', 'like', "%{$search}%");
+                        ->orWhere('spesialisasi', 'like', "%{$search}%");
 
                 })
 
@@ -524,7 +513,7 @@ class AdminDashboardController extends Controller
 
             return view('admin.terapis-index', compact('terapisList', 'spesialisasiOptions'));
 
-           
+
 
         } catch (\Exception $e) {
 
@@ -545,7 +534,6 @@ class AdminDashboardController extends Controller
      */
 
     public function terapisStore(Request $request)
-
     {
 
         try {
@@ -612,7 +600,7 @@ class AdminDashboardController extends Controller
 
             $user->assignRole('terapis');
 
-           
+
 
             Log::info('Terapis created', [
 
@@ -626,9 +614,9 @@ class AdminDashboardController extends Controller
 
             return redirect()->route('admin.terapis.index')
 
-                             ->with('success', 'Terapis berhasil ditambahkan!');
+                ->with('success', 'Terapis berhasil ditambahkan!');
 
-                             
+
 
         } catch (\Illuminate\Validation\ValidationException $e) {
 
@@ -661,7 +649,6 @@ class AdminDashboardController extends Controller
      */
 
     public function terapisEdit($id)
-
     {
 
         try {
@@ -688,7 +675,7 @@ class AdminDashboardController extends Controller
 
             return view('admin.terapis-edit', compact('terapis', 'spesialisasiOptions'));
 
-           
+
 
         } catch (\Exception $e) {
 
@@ -711,7 +698,6 @@ class AdminDashboardController extends Controller
      */
 
     public function terapisUpdate(Request $request, $id)
-
     {
 
         try {
@@ -762,7 +748,7 @@ class AdminDashboardController extends Controller
 
             $terapis->update($validated);
 
-           
+
 
             Log::info('Terapis updated', [
 
@@ -776,9 +762,9 @@ class AdminDashboardController extends Controller
 
             return redirect()->route('admin.terapis.index')
 
-                             ->with('updated', 'Data Terapis berhasil diperbarui.');
+                ->with('updated', 'Data Terapis berhasil diperbarui.');
 
-                             
+
 
         } catch (\Illuminate\Validation\ValidationException $e) {
 
@@ -811,7 +797,6 @@ class AdminDashboardController extends Controller
      */
 
     public function terapisDestroy($id)
-
     {
 
         try {
@@ -820,11 +805,11 @@ class AdminDashboardController extends Controller
 
             $nama = $terapis->name;
 
-           
+
 
             $terapis->delete();
 
-           
+
 
             Log::info('Terapis deleted', [
 
@@ -840,14 +825,12 @@ class AdminDashboardController extends Controller
 
             return redirect()->route('admin.terapis.index')
 
-                             ->with('deleted', 'Terapis berhasil dihapus.');
+                ->with('deleted', 'Terapis berhasil dihapus.');
 
-                             
+
 
         } catch (\Exception $e) {
-
             Log::error('Error deleting terapis: ' . $e->getMessage());
-
             return redirect()->back()->with('error', 'Gagal menghapus data terapis.');
 
         }
@@ -857,51 +840,29 @@ class AdminDashboardController extends Controller
 
 
     // ============================================
-
     // ========== LAPORAN & PDF ===================
-
     // ============================================
-
-
-
     public function cetakJadwal($id_pasien)
-
     {
-
         $data = [
-
             'nama_pasien' => 'Shidqul Mariska',
-
             'no_rm' => '123-456-789',
-
             'no_telp' => '0812-3456-7890',
-
             'jadwal_list' => [
-
                 [
-
                     'tanggal' => 'Senin, 28 Okt 2024',
-
                     'jenis' => 'Fisioterapi Neurologi',
-
                     'terapis' => 'Budi Santoso, S.Ft',
-
                     'jam' => '09:00 - 10:00',
-
                     'status' => 'Terjadwal',
 
                 ],
 
                 [
-
                     'tanggal' => 'Rabu, 30 Okt 2024',
-
                     'jenis' => 'Terapi Okupasi',
-
                     'terapis' => 'Citra Lestari, A.Md.OT',
-
                     'jam' => '11:00 - 12:00',
-
                     'status' => 'Terjadwal',
 
                 ],
@@ -928,27 +889,26 @@ class AdminDashboardController extends Controller
 
         $pdf = Pdf::loadView('pdf.jadwal-pasien', $data);
 
-        return $pdf->stream('jadwal-pasien-'.$data['no_rm'].'.pdf');
+        return $pdf->stream('jadwal-pasien-' . $data['no_rm'] . '.pdf');
 
     }
 
 
 
     public function laporanIndex()
-
     {
 
         $laporanData = [
 
-            (object)['tanggal' => '14 Okt 2024', 'jam' => '09:00', 'nama_pasien' => 'Siti Aminah', 'no_rm' => 'RM001', 'jenis_terapi' => 'Fisioterapi', 'nama_terapis' => 'Dr. Budi S.', 'status' => 'Selesai'],
+            (object) ['tanggal' => '14 Okt 2024', 'jam' => '09:00', 'nama_pasien' => 'Siti Aminah', 'no_rm' => 'RM001', 'jenis_terapi' => 'Fisioterapi', 'nama_terapis' => 'Dr. Budi S.', 'status' => 'Selesai'],
 
-            (object)['tanggal' => '14 Okt 2024', 'jam' => '10:00', 'nama_pasien' => 'Bambang Wijoyo', 'no_rm' => 'RM002', 'jenis_terapi' => 'Terapi Okupasi', 'nama_terapis' => 'Dr. Citra L.', 'status' => 'Selesai'],
+            (object) ['tanggal' => '14 Okt 2024', 'jam' => '10:00', 'nama_pasien' => 'Bambang Wijoyo', 'no_rm' => 'RM002', 'jenis_terapi' => 'Terapi Okupasi', 'nama_terapis' => 'Dr. Citra L.', 'status' => 'Selesai'],
 
-            (object)['tanggal' => '13 Okt 2024', 'jam' => '11:00', 'nama_pasien' => 'Rina Martina', 'no_rm' => 'RM003', 'jenis_terapi' => 'Fisioterapi', 'nama_terapis' => 'Dr. Budi S.', 'status' => 'Dibatalkan'],
+            (object) ['tanggal' => '13 Okt 2024', 'jam' => '11:00', 'nama_pasien' => 'Rina Martina', 'no_rm' => 'RM003', 'jenis_terapi' => 'Fisioterapi', 'nama_terapis' => 'Dr. Budi S.', 'status' => 'Dibatalkan'],
 
-            (object)['tanggal' => '12 Okt 2024', 'jam' => '14:00', 'nama_pasien' => 'Agus Setiawan', 'no_rm' => 'RM004', 'jenis_terapi' => 'Fisioterapi', 'nama_terapis' => 'Dr. Ahmad D.', 'status' => 'Selesai'],
+            (object) ['tanggal' => '12 Okt 2024', 'jam' => '14:00', 'nama_pasien' => 'Agus Setiawan', 'no_rm' => 'RM004', 'jenis_terapi' => 'Fisioterapi', 'nama_terapis' => 'Dr. Ahmad D.', 'status' => 'Selesai'],
 
-            (object)['tanggal' => '11 Okt 2024', 'jam' => '15:00', 'nama_pasien' => 'Dewi Sartika', 'no_rm' => 'RM005', 'jenis_terapi' => 'Terapi Okupasi', 'nama_terapis' => 'Dr. Citra L.', 'status' => 'Selesai'],
+            (object) ['tanggal' => '11 Okt 2024', 'jam' => '15:00', 'nama_pasien' => 'Dewi Sartika', 'no_rm' => 'RM005', 'jenis_terapi' => 'Terapi Okupasi', 'nama_terapis' => 'Dr. Citra L.', 'status' => 'Selesai'],
 
         ];
 

@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
 
-    return view('welcome');
+     return view('welcome');
 
 });
 
@@ -42,7 +42,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
 
-    ->middleware(['auth', 'verified'])->name('dashboard');
+     ->middleware(['auth', 'verified'])->name('dashboard');
 
 
 
@@ -54,89 +54,89 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
-   
 
-    // Dashboard Admin
 
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
+     // Dashboard Admin
 
-         ->name('admin.dashboard');
+     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
 
-   
+          ->name('admin.dashboard');
 
-    // Manajemen Users
 
-    Route::get('/admin/users', [AdminDashboardController::class, 'usersIndex'])
 
-         ->name('admin.users.index');
+     // Manajemen Users
 
-    Route::get('/admin/users/{user}/edit', [AdminDashboardController::class, 'edit'])
+     Route::get('/admin/users', [AdminDashboardController::class, 'usersIndex'])
 
-         ->name('admin.users.edit');
+          ->name('admin.users.index');
 
-    Route::put('/admin/users/{user}', [AdminDashboardController::class, 'update'])
+     Route::get('/admin/users/{user}/edit', [AdminDashboardController::class, 'edit'])
 
-         ->name('admin.users.update');
+          ->name('admin.users.edit');
 
-    Route::delete('/admin/users/{user}', [AdminDashboardController::class, 'destroy'])
+     Route::put('/admin/users/{user}', [AdminDashboardController::class, 'update'])
 
-         ->name('admin.users.destroy');
+          ->name('admin.users.update');
 
-   
+     Route::delete('/admin/users/{user}', [AdminDashboardController::class, 'destroy'])
 
-    // Manajemen Pasien
+          ->name('admin.users.destroy');
 
-    Route::get('/admin/pasien', [AdminDashboardController::class, 'pasienIndex'])
 
-         ->name('admin.pasien.index');
 
-    Route::post('/admin/pasien', [AdminDashboardController::class, 'pasienStore'])
+     // Manajemen Pasien
 
-         ->name('admin.pasien.store');
+     Route::get('/admin/pasien', [AdminDashboardController::class, 'pasienIndex'])
 
-    Route::put('/admin/pasien/{id}', [AdminDashboardController::class, 'pasienUpdate'])
+          ->name('admin.pasien.index');
 
-         ->name('admin.pasien.update');
+     Route::post('/admin/pasien', [AdminDashboardController::class, 'pasienStore'])
 
-    Route::delete('/admin/pasien/{id}', [AdminDashboardController::class, 'pasienDestroy'])
+          ->name('admin.pasien.store');
 
-         ->name('admin.pasien.destroy');
+     Route::put('/admin/pasien/{id}', [AdminDashboardController::class, 'pasienUpdate'])
 
-   
+          ->name('admin.pasien.update');
 
-    // Manajemen Terapis
+     Route::delete('/admin/pasien/{id}', [AdminDashboardController::class, 'pasienDestroy'])
 
-    Route::get('/admin/terapis', [AdminDashboardController::class, 'terapisIndex'])
+          ->name('admin.pasien.destroy');
 
-         ->name('admin.terapis.index');
 
-    Route::post('/admin/terapis', [AdminDashboardController::class, 'terapisStore'])
 
-         ->name('admin.terapis.store');
+     // Manajemen Terapis
 
-    Route::get('/admin/terapis/{id}/edit', [AdminDashboardController::class, 'terapisEdit'])
+     Route::get('/admin/terapis', [AdminDashboardController::class, 'terapisIndex'])
 
-         ->name('admin.terapis.edit');
+          ->name('admin.terapis.index');
 
-    Route::put('/admin/terapis/{id}', [AdminDashboardController::class, 'terapisUpdate'])
+     Route::post('/admin/terapis', [AdminDashboardController::class, 'terapisStore'])
 
-         ->name('admin.terapis.update');
+          ->name('admin.terapis.store');
 
-    Route::delete('/admin/terapis/{id}', [AdminDashboardController::class, 'terapisDestroy'])
+     Route::get('/admin/terapis/{id}/edit', [AdminDashboardController::class, 'terapisEdit'])
 
-         ->name('admin.terapis.destroy');
+          ->name('admin.terapis.edit');
 
-   
+     Route::put('/admin/terapis/{id}', [AdminDashboardController::class, 'terapisUpdate'])
 
-    // Laporan & Cetak
+          ->name('admin.terapis.update');
 
-    Route::get('/admin/laporan', [AdminDashboardController::class, 'laporanIndex'])
+     Route::delete('/admin/terapis/{id}', [AdminDashboardController::class, 'terapisDestroy'])
 
-         ->name('admin.laporan.index');
+          ->name('admin.terapis.destroy');
 
-    Route::get('/admin/jadwal/{id_pasien}/cetak', [AdminDashboardController::class, 'cetakJadwal'])
 
-         ->name('admin.jadwal.cetak');
+
+     // Laporan & Cetak
+
+     Route::get('/admin/laporan', [AdminDashboardController::class, 'laporanIndex'])
+
+          ->name('admin.laporan.index');
+
+     Route::get('/admin/jadwal/{id_pasien}/cetak', [AdminDashboardController::class, 'cetakJadwal'])
+
+          ->name('admin.jadwal.cetak');
 
 });
 
@@ -150,11 +150,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
 Route::middleware(['auth', 'verified', 'role:terapis'])->group(function () {
 
-    Route::get('/terapis/dashboard', function () {
+     Route::get('/terapis/dashboard', function () {
 
-        return view('terapis.dashboard');
+          return view('terapis.dashboard');
 
-    })->name('terapis.dashboard');
+     })->name('terapis.dashboard');
 
 });
 
@@ -168,17 +168,17 @@ Route::middleware(['auth', 'verified', 'role:terapis'])->group(function () {
 
 Route::middleware(['auth', 'verified', 'role:kepala'])->group(function () {
 
-    Route::get('/kepala/dashboard', function () {
+     Route::get('/kepala/dashboard', function () {
 
-        return view('kepala.dashboard');
+          return view('kepala.dashboard');
 
-    })->name('kepala.dashboard');
+     })->name('kepala.dashboard');
 
 
 
-    Route::get('/kepala/laporan', [KepalaLaporanController::class, 'index'])
+     Route::get('/kepala/laporan', [KepalaLaporanController::class, 'index'])
 
-         ->name('kepala.laporan');
+          ->name('kepala.laporan');
 
 });
 
@@ -191,15 +191,12 @@ Route::middleware(['auth', 'verified', 'role:kepala'])->group(function () {
 // ============================================
 
 Route::middleware('auth')->group(function () {
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
