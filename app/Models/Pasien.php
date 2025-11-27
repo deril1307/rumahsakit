@@ -12,15 +12,16 @@ use Illuminate\Database\Eloquent\Model;
 
 use Carbon\Carbon;
 
-
+/**
+ * @property Carbon|null $tgl_lahir  
+ */
 
 class Pasien extends Model
-
 {
 
     use HasFactory;
 
-   
+
 
     /**
 
@@ -52,7 +53,7 @@ class Pasien extends Model
 
     ];
 
-   
+
 
     /**
 
@@ -70,7 +71,7 @@ class Pasien extends Model
 
     ];
 
-   
+
 
     /**
 
@@ -79,14 +80,13 @@ class Pasien extends Model
      */
 
     public function scopeAktif($query)
-
     {
 
         return $query->where('status', 'Aktif');
 
     }
 
-   
+
 
     /**
 
@@ -95,14 +95,13 @@ class Pasien extends Model
      */
 
     public function scopeNonaktif($query)
-
     {
 
         return $query->where('status', 'Nonaktif');
 
     }
 
-   
+
 
     /**
 
@@ -111,14 +110,9 @@ class Pasien extends Model
      */
 
     public function getUmurAttribute()
-
     {
-
         return $this->tgl_lahir ? $this->tgl_lahir->age : null;
-
     }
-
-   
 
     /**
 
@@ -127,11 +121,7 @@ class Pasien extends Model
      */
 
     public function getTglLahirFormattedAttribute()
-
     {
-
         return $this->tgl_lahir ? $this->tgl_lahir->format('d/m/Y') : '-';
-
     }
-
 }
