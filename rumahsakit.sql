@@ -41,16 +41,19 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rumahsakit.migrations: ~5 rows (approximately)
+-- Dumping data for table rumahsakit.migrations: ~7 rows (approximately)
 DELETE FROM `migrations`;
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2014_10_12_000000_create_users_table', 1),
 	(2, '2014_10_12_100000_create_password_reset_tokens_table', 1),
 	(3, '2019_08_19_000000_create_failed_jobs_table', 1),
 	(4, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-	(5, '2025_11_05_074036_create_permission_tables', 2);
+	(5, '2025_11_05_074036_create_permission_tables', 2),
+	(6, '2025_11_17_170047_add_terapis_fields_to_users_table', 3),
+	(7, '2025_11_17_171305_add_nip_to_users_table', 4),
+	(8, '2025_11_19_073224_create_pasiens_table', 5);
 
 -- Dumping structure for table rumahsakit.model_has_permissions
 CREATE TABLE IF NOT EXISTS `model_has_permissions` (
@@ -81,7 +84,30 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 	(1, 'App\\Models\\User', 1),
 	(1, 'App\\Models\\User', 5),
 	(3, 'App\\Models\\User', 6),
-	(2, 'App\\Models\\User', 7);
+	(2, 'App\\Models\\User', 7),
+	(2, 'App\\Models\\User', 13);
+
+-- Dumping structure for table rumahsakit.pasiens
+CREATE TABLE IF NOT EXISTS `pasiens` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `no_rm` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `jenis_kelamin` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alamat` text COLLATE utf8mb4_unicode_ci,
+  `no_telp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `riwayat_medis` text COLLATE utf8mb4_unicode_ci,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Aktif',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pasiens_no_rm_unique` (`no_rm`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table rumahsakit.pasiens: ~0 rows (approximately)
+DELETE FROM `pasiens`;
+INSERT INTO `pasiens` (`id`, `nama`, `no_rm`, `tgl_lahir`, `jenis_kelamin`, `alamat`, `no_telp`, `riwayat_medis`, `status`, `created_at`, `updated_at`) VALUES
+	(1, 'Aryo Pradipta', '012345', '2003-06-20', 'Laki-laki', 'Jl Babakan Ciamis', '083815903215', 'Alergi Hidung', 'Aktif', '2025-11-19 00:39:13', '2025-11-21 23:55:22');
 
 -- Dumping structure for table rumahsakit.password_reset_tokens
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
@@ -175,7 +201,11 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nip` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `spesialisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `no_telp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Aktif',
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -183,15 +213,16 @@ CREATE TABLE IF NOT EXISTS `users` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rumahsakit.users: ~4 rows (approximately)
+-- Dumping data for table rumahsakit.users: ~5 rows (approximately)
 DELETE FROM `users`;
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-	(1, 'Deril Wijdan Falih', 'derilwijdan346@gmail.com', NULL, '$2y$12$BoexXpXzXhrfvzq7jQ42IOE5pTSO4C23Xb/PeCpGVTqcDqQS1VrB.', 'nOWC9AA9FXPQPiE62VsXuOZTqncK0SU8GDNmbbPfKUX9zOFoaxbDIeFdgwMZ', '2025-11-05 00:14:22', '2025-11-05 01:26:53'),
-	(5, 'Shidqul Mariska', 'shidqu@gmail.com', NULL, '$2y$12$vJaHFwpt2rD1hpXzYWtk4u73OjcCnwwVS1rj86VV.OBOfaUAmOBU2', NULL, '2025-11-06 01:37:32', '2025-11-06 01:37:41'),
-	(6, 'Giovanni Nadika', 'gio@gmail.com', NULL, '$2y$12$ViSuvuPP261XySB/DVfbEubMouXRNPXdb3w1F7jQOrN0BmaeKdY0u', NULL, '2025-11-06 01:39:07', '2025-11-07 04:12:06'),
-	(7, 'Bima Aditya Ramadhan', 'bima@gmail.com', NULL, '$2y$12$IR7bkdyHKNbhhEjtIqk1nOqQvIm4ruxyJj.wBlif6GuXLFjYSWF.m', NULL, '2025-11-06 01:39:34', '2025-11-07 04:11:41');
+INSERT INTO `users` (`id`, `name`, `nip`, `email`, `spesialisasi`, `no_telp`, `status`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
+	(1, 'Deril Wijdan Falih', '12345', 'derilwijdan346@gmail.com', NULL, '083815903215', 'Aktif', NULL, '$2y$12$BoexXpXzXhrfvzq7jQ42IOE5pTSO4C23Xb/PeCpGVTqcDqQS1VrB.', 'Tz4b0x55HAm4zmxhZDRIE7mhYVBPQTK7IdP5cwE0nJFjwM63MJYn2APHlaOh', '2025-11-05 00:14:22', '2025-11-05 01:26:53'),
+	(5, 'Shidqul Aziz lababan', '12345', 'shidqul@gmail.com', NULL, NULL, 'Aktif', NULL, '$2y$12$vJaHFwpt2rD1hpXzYWtk4u73OjcCnwwVS1rj86VV.OBOfaUAmOBU2', '9BORe7i66g2cDOFH5S66b1v95tGLdv4vlKCYku1sACZ7PkdovonaLafsVlgU', '2025-11-06 01:37:32', '2025-11-17 20:24:23'),
+	(6, 'Giovanni Nadika', '12345', 'gio@gmail.com', NULL, NULL, 'Aktif', NULL, '$2y$12$ViSuvuPP261XySB/DVfbEubMouXRNPXdb3w1F7jQOrN0BmaeKdY0u', NULL, '2025-11-06 01:39:07', '2025-11-07 04:12:06'),
+	(7, 'Bima Aditya Ramadhan', '12345', 'bima@gmail.com', 'Terapi Okupasi', '081234567810', 'Aktif', NULL, '$2y$12$IR7bkdyHKNbhhEjtIqk1nOqQvIm4ruxyJj.wBlif6GuXLFjYSWF.m', NULL, '2025-11-06 01:39:34', '2025-11-19 00:39:48'),
+	(13, 'Hanif', '155555', 'hanif@gmail.com', 'Terapi Okupasi', '083815903215', 'Aktif', NULL, '$2y$12$wpgPz.Y1.DCi705.v4g8H.Zc5oQHWHDpGuJJEkvXxLu854E03BGNW', NULL, '2025-11-22 10:20:29', '2025-11-22 10:20:46');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
