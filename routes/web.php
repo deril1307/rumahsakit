@@ -64,22 +64,30 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::delete('/admin/terapis/{id}', [AdminDashboardController::class, 'terapisDestroy'])
          ->name('admin.terapis.destroy');
 
-    // === MANAJEMEN JADWAL (UPDATE LENGKAP DISINI) ===
+    // === MANAJEMEN JADWAL (UPDATE LENGKAP) ===
     Route::get('/admin/jadwal', [JadwalController::class, 'index'])->name('admin.jadwal.index');
     Route::get('/admin/jadwal/create', [JadwalController::class, 'create'])->name('admin.jadwal.create');
     Route::post('/admin/jadwal', [JadwalController::class, 'store'])->name('admin.jadwal.store');
     
-    // INI YANG SEBELUMNYA KURANG (Route Edit & Update):
+    // Route Edit & Update:
     Route::get('/admin/jadwal/{id}/edit', [JadwalController::class, 'edit'])->name('admin.jadwal.edit');
     Route::put('/admin/jadwal/{id}', [JadwalController::class, 'update'])->name('admin.jadwal.update');
     
+    // Route Hapus:
     Route::delete('/admin/jadwal/{id}', [JadwalController::class, 'destroy'])->name('admin.jadwal.destroy');
+
+    // Route Cetak PDF (TIKET):
+    // Menggunakan {id} jadwal, bukan {id_pasien}
+    Route::get('/admin/jadwal/{id}/cetak', [JadwalController::class, 'cetak'])->name('admin.jadwal.cetak');
 
     // Laporan & Cetak
     Route::get('/admin/laporan', [AdminDashboardController::class, 'laporanIndex'])
          ->name('admin.laporan.index');
-    Route::get('/admin/jadwal/{id_pasien}/cetak', [AdminDashboardController::class, 'cetakJadwal'])
-         ->name('admin.jadwal.cetak');
+    
+    // Route Cetak Lama (Saya rename agar tidak bentrok dengan tiket jadwal diatas)
+    // Route ini sepertinya untuk cetak seluruh riwayat pasien
+    Route::get('/admin/jadwal/{id_pasien}/cetak-riwayat', [AdminDashboardController::class, 'cetakJadwal'])
+         ->name('admin.jadwal.cetak_riwayat');
 });
 
 // ============================================
@@ -112,4 +120,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';  
+require __DIR__.'/auth.php';

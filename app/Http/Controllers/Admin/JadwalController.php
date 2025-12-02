@@ -10,6 +10,7 @@ use App\Models\JenisTerapi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf; // Pastikan Library PDF di-import
 
 class JadwalController extends Controller
 {
@@ -18,7 +19,11 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        $jadwals = Jadwal::with(['pasien', 'terapis'])->orderBy('tanggal', 'desc')->orderBy('jam_mulai', 'asc')->get();
+        // Mengambil data jadwal dengan relasi, diurutkan berdasarkan tanggal terbaru
+        $jadwals = Jadwal::with(['pasien', 'terapis'])
+                    ->orderBy('tanggal', 'desc')
+                    ->orderBy('jam_mulai', 'asc')
+                    ->get();
         return view('admin.jadwal.index', compact('jadwals'));
     }
 
@@ -173,5 +178,25 @@ class JadwalController extends Controller
         $jadwal->delete();
 
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
+    }
+
+    /**
+     * Method Baru: Cetak PDF Tiket Jadwal
+     * Ini akan mencetak data jadwal yang spesifik berdasarkan ID-nya.
+     * ID yang digunakan adalah ID unik dari database, bukan nomor urut tabel.
+     */
+    public function cetak($id)
+    {
+        // Cari jadwal berdasarkan ID, jika tidak ketemu tampilkan 404
+        $jadwal = Jadwal::with(['pasien', 'terapis'])->findOrFail($id);
+
+        // Load view PDF (pastikan file resources/views/admin/jadwal/pdf.blade.php ada)
+        $pdf = Pdf::loadView('admin.jadwal.pdf', compact('jadwal'));
+        
+        // Atur ukuran kertas struk/tiket (A5 Landscape agar hemat kertas dan pas jadi tiket)
+        $pdf->setPaper('a5', 'landscape');
+
+        // Tampilkan di browser dengan nama file yang relevan
+        return $pdf->stream('Tiket-Jadwal-' . $jadwal->pasien->no_rm . '.pdf');
     }
 }
