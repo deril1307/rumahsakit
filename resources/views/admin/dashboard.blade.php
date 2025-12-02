@@ -19,7 +19,7 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
                         Pilih Pasien
                     </h3>
-                    
+
                     <div class="flex border-b border-gray-200">
                         <button class="py-2 px-4 text-green-600 border-b-2 border-green-600 font-semibold">
                             Ambil dari Teramedik
@@ -40,25 +40,28 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
                         Atur Jadwal
                     </h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <x-input-label for="jenis_terapi" :value="__('Jenis Terapi')" />
-                            <select id="jenis_terapi" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <select id="jenis_terapi"
+                                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option>Fisioterapi</option>
                                 <option>Terapi Okupasi</option>
                                 <option>Terapi Wicara</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <x-input-label for="tanggal_mulai" :value="__('Tanggal Mulai')" />
-                            <x-text-input id="tanggal_mulai" class="block mt-1 w-full" type="date" value="2023-10-25" />
+                            <x-text-input id="tanggal_mulai" class="block mt-1 w-full" type="date"
+                                value="2023-10-25" />
                         </div>
 
                         <div>
                             <x-input-label for="frekuensi" :value="__('Frekuensi')" />
-                            <select id="frekuensi" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <select id="frekuensi"
+                                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option>2x / minggu (Total 8 sesi)</option>
                                 <option>1x / minggu (Total 4 sesi)</option>
                             </select>
@@ -120,11 +123,15 @@
                     </div>
 
                     <div class="mt-4 flex space-x-4 text-sm">
-                        <div class="flex items-center"><span class="w-4 h-4 bg-green-600 rounded-full mr-2"></span> Tersedia</div>
-                        <div class="flex items-center"><span class="w-4 h-4 bg-red-100 rounded-full mr-2 border border-red-300"></span> Tidak Tersedia</div>
-                        <div class="flex items-center"><span class="w-4 h-4 bg-green-800 rounded-full mr-2"></span> Jadwal Dipilih</div>
+                        <div class="flex items-center"><span class="w-4 h-4 bg-green-600 rounded-full mr-2"></span>
+                            Tersedia</div>
+                        <div class="flex items-center"><span
+                                class="w-4 h-4 bg-red-100 rounded-full mr-2 border border-red-300"></span> Tidak
+                            Tersedia</div>
+                        <div class="flex items-center"><span class="w-4 h-4 bg-green-800 rounded-full mr-2"></span>
+                            Jadwal Dipilih</div>
                     </div>
-                    
+
                     <div class="mt-4 text-xs text-blue-600">
                         <p class="font-bold">Aturan Penjadwalan:</p>
                         <ul class="list-disc list-inside">
@@ -140,14 +147,22 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
                         Preview Jadwal (Oktober - November 2023)
                     </h3>
-                    
+
                     <table class="min-w-full divide-y divide-gray-200 border">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jam</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terapis</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tanggal</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Jam</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Terapis</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -156,7 +171,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">10:00</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">Ahmad Yani</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
                                 </td>
                             </tr>
                             <tr>
@@ -164,7 +180,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">14:00</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">Siti Hajar</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
                                 </td>
                             </tr>
                             <tr>
@@ -172,7 +189,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">09:00</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">Ahmad Yani</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
                                 </td>
                             </tr>
                             <tr>
@@ -180,7 +198,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">10:00</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">Ahmad Yani</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
                                 </td>
                             </tr>
                             <tr>
@@ -188,22 +207,16 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">14:00</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">Siti Hajar</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Generated</span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            
-            <div class="flex justify-end">
-                {{-- Ganti <button> menjadi <a> --}}
-                <a href="{{ route('admin.jadwal.cetak', ['id_pasien' => 1]) }}" {{-- id_pasien=1 ini HANYA CONTOH --}}
-                   target="_blank" {{-- Buka di tab baru --}}
-                   class="px-6 py-2 bg-orange-500 text-white font-semibold rounded-md shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
-                    Cetak Jadwal Pasien
-                </a>
-            </div>
+
+
 
         </div>
     </div>
