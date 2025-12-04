@@ -5,7 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Kepala\KepalaLaporanController;
 // PENTING: Tambahkan ini agar JadwalController dikenali
-use App\Http\Controllers\Admin\JadwalController; 
+use App\Http\Controllers\Admin\JadwalController;
+use App\Http\Controllers\Terapis\TerapisDashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -94,9 +95,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 // ========== ROUTES TERAPIS ==================
 // ============================================
 Route::middleware(['auth', 'verified', 'role:terapis'])->group(function () {
-    Route::get('/terapis/dashboard', function () {
-        return view('terapis.dashboard');
-    })->name('terapis.dashboard');
+    Route::get('/terapis/dashboard', [TerapisDashboardController::class, 'index'])
+         ->name('terapis.dashboard');
 });
 
 // ============================================

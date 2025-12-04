@@ -33,7 +33,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-medium text-gray-900">Daftar Jadwal Terapi</h3>
                         <a href="{{ route('admin.jadwal.create') }}"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
+                            class="bg-green-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
                             + Buat Jadwal Baru
                         </a>
                     </div>
@@ -88,7 +88,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full  text-gray-800">
                                                 {{ $jadwal->jenis_terapi }}
                                             </span>
                                         </td>
