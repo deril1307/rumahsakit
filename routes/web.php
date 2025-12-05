@@ -6,7 +6,8 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Kepala\KepalaLaporanController;
 // PENTING: Tambahkan ini agar JadwalController dikenali
 use App\Http\Controllers\Admin\JadwalController;
-use App\Http\Controllers\Terapis\TerapisDashboardController;
+// PENTING: Tambahkan ini untuk TerapisDashboardController
+use App\Http\Controllers\Terapis\TerapisDashboardController; 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -95,8 +96,24 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 // ========== ROUTES TERAPIS ==================
 // ============================================
 Route::middleware(['auth', 'verified', 'role:terapis'])->group(function () {
+    
+    // Dashboard Terapis
     Route::get('/terapis/dashboard', [TerapisDashboardController::class, 'index'])
          ->name('terapis.dashboard');
+
+    // Route untuk update status via Tombol Cepat (Patch)
+    Route::patch('/terapis/jadwal/{id}/status', [TerapisDashboardController::class, 'updateStatus'])
+         ->name('terapis.jadwal.updateStatus');
+
+    // Route Edit Jadwal (Tampilan Form Edit) - BARU
+    Route::get('/terapis/jadwal/{id}/edit', [TerapisDashboardController::class, 'edit'])
+         ->name('terapis.jadwal.edit');
+         
+    // Route Proses Update (Simpan Perubahan dari Form Edit) - BARU
+    // Kita gunakan method updateStatus yang sama karena logikanya mirip
+    Route::put('/terapis/jadwal/{id}', [TerapisDashboardController::class, 'updateStatus'])
+         ->name('terapis.jadwal.update');
+
 });
 
 // ============================================
