@@ -69,12 +69,35 @@
                                 <x-input-error :messages="$errors->get('pasien_id')" class="mt-2" />
                             </div>
 
-                            <!-- 2. Pilih Jenis Terapi -->
+                            <!-- 2. Pilih Terapis (Dipindah ke Atas agar UX lebih baik) -->
+                            <!-- Script di bawah akan membaca 'data-spesialisasi' dari sini -->
                             <div>
-                                <x-input-label for="jenis_terapi" :value="__('Jenis Terapi')" />
-                                <select id="jenis_terapi" name="jenis_terapi"
+                                <x-input-label for="user_id" :value="__('Pilih Terapis')" />
+                                <select id="user_id" name="user_id"
                                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                    <option value="">-- Pilih Layanan --</option>
+                                    <option value="">-- Pilih Terapis --</option>
+                                    @foreach ($terapis as $terapisItem)
+                                        <option value="{{ $terapisItem->id }}"
+                                            data-spesialisasi="{{ $terapisItem->spesialisasi }}"
+                                            {{ old('user_id') == $terapisItem->id ? 'selected' : '' }}>
+                                            {{ $terapisItem->name }} ({{ $terapisItem->spesialisasi ?? 'Umum' }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <x-input-error :messages="$errors->get('user_id')" class="mt-2" />
+                            </div>
+
+                            <!-- 3. Pilih Jenis Terapi (Otomatis Terisi & Readonly) -->
+                            <!-- Kita gunakan class 'pointer-events-none bg-gray-100' untuk efek visual readonly -->
+                            <div>
+                                <x-input-label for="jenis_terapi" :value="__('Jenis Terapi (Otomatis)')" />
+
+                                <!-- Input Select yang sebenarnya (untuk display & kirim data) -->
+                                <!-- Kita tambahkan sedikit trik JS di bawah agar valuenya terkunci -->
+                                <select id="jenis_terapi" name="jenis_terapi"
+                                    class="mt-1 block w-full border-gray-300 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm cursor-not-allowed pointer-events-none"
+                                    tabindex="-1" aria-readonly="true">
+                                    <option value="">-- Pilih Terapis Dahulu --</option>
                                     @foreach ($jenisTerapis as $jenis)
                                         <option value="{{ $jenis->nama_terapi }}"
                                             {{ old('jenis_terapi') == $jenis->nama_terapi ? 'selected' : '' }}>
@@ -83,22 +106,6 @@
                                     @endforeach
                                 </select>
                                 <x-input-error :messages="$errors->get('jenis_terapi')" class="mt-2" />
-                            </div>
-
-                            <!-- 3. Pilih Terapis -->
-                            <div>
-                                <x-input-label for="user_id" :value="__('Pilih Terapis')" />
-                                <select id="user_id" name="user_id"
-                                    class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                    <option value="">-- Pilih Terapis --</option>
-                                    @foreach ($terapis as $terapisItem)
-                                        <option value="{{ $terapisItem->id }}"
-                                            {{ old('user_id') == $terapisItem->id ? 'selected' : '' }}>
-                                            {{ $terapisItem->name }} ({{ $terapisItem->spesialisasi ?? 'Umum' }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <x-input-error :messages="$errors->get('user_id')" class="mt-2" />
                             </div>
 
                             <!-- 4. Tanggal Terapi -->
@@ -167,4 +174,41 @@
             </div>
         </div>
     </div>
+
+    {{-- SCRIPT OTOMATISASI JENIS TERAPI --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const terapisSelect = document.getElementById('user_id');
+            const jenisTerapiSelect = document.getElementById('jenis_terapi');
+
+            // Fungsi untuk update jenis terapi
+            function updateJenisTerapi() {
+                const selectedOption = terapisSelect.options[terapisSelect.selectedIndex];
+                const spesialisasi = selectedOption.getAttribute('data-spesialisasi');
+
+                if (spesialisasi) {
+                    // Cari opsi yang value-nya sama dengan spesialisasi terapis
+                    for (let i = 0; i < jenisTerapiSelect.options.length; i++) {
+                        // Kita gunakan 'includes' atau match sederhana untuk fleksibilitas
+                        // Pastikan nama di database 'users.spesialisasi' sama persis dengan 'jenis_terapis.nama_terapi'
+                        if (jenisTerapiSelect.options[i].value === spesialisasi) {
+                            jenisTerapiSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    // Reset jika tidak ada spesialisasi (misal pilihan default)
+                    jenisTerapiSelect.selectedIndex = 0;
+                }
+            }
+
+            // Jalankan saat user memilih terapis
+            terapisSelect.addEventListener('change', updateJenisTerapi);
+
+            // Jalankan sekali saat halaman dimuat (untuk handle old input saat validasi error)
+            if (terapisSelect.value) {
+                updateJenisTerapi();
+            }
+        });
+    </script>
 </x-app-layout>
