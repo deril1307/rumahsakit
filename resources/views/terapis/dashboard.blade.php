@@ -8,22 +8,6 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <!-- INFO STATISTIK -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-blue-50 overflow-hidden shadow-sm sm:rounded-lg border-l-4 border-blue-500 p-6">
-                    <div class="text-blue-500 text-sm font-bold uppercase">Total Pasien Hari Ini</div>
-                    <div class="text-3xl font-bold text-gray-800">{{ $totalPasienHariIni ?? 0 }}</div>
-                </div>
-                <div class="bg-green-50 overflow-hidden shadow-sm sm:rounded-lg border-l-4 border-green-500 p-6">
-                    <div class="text-green-600 text-sm font-bold uppercase">Selesai Ditangani</div>
-                    <div class="text-3xl font-bold text-gray-800">{{ $pasienSelesai ?? 0 }}</div>
-                </div>
-                <div class="bg-yellow-50 overflow-hidden shadow-sm sm:rounded-lg border-l-4 border-yellow-500 p-6">
-                    <div class="text-yellow-600 text-sm font-bold uppercase">Menunggu / Pending</div>
-                    <div class="text-3xl font-bold text-gray-800">{{ $pasienMenunggu ?? 0 }}</div>
-                </div>
-            </div>
-
             <!-- CARD: DAFTAR JADWAL -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -119,7 +103,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if ($jadwal->status == 'terjadwal')
                                                 <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                                                     Terjadwal
                                                 </span>
                                             @elseif($jadwal->status == 'selesai')
@@ -134,8 +118,8 @@
                                                 </span>
                                             @elseif($jadwal->status == 'pending')
                                                 <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
-                                                    Pending
+                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                                                    Pending/Ditunda
                                                 </span>
                                             @endif
                                         </td>
@@ -145,7 +129,7 @@
 
                                             <div class="flex space-x-2 items-center">
 
-                                                {{-- Tombol Edit --}}
+                                                {{-- Tombol Edit (Untuk Koreksi) --}}
                                                 <a href="{{ route('terapis.jadwal.edit', $jadwal->id) }}"
                                                     class="text-yellow-600 hover:text-yellow-900"
                                                     title="Edit Status / Koreksi">
@@ -182,7 +166,7 @@
                                                         <input type="hidden" name="status" value="pending">
                                                         <button type="submit"
                                                             class="text-orange-600 hover:text-orange-900 font-bold"
-                                                            onclick="return confirm('Tandai sesi ini sebagai PENDING?')">
+                                                            onclick="return confirm('Tandai sesi ini sebagai PENDING/DITUNDA?')">
                                                             ⏳
                                                         </button>
                                                     </form>
@@ -200,20 +184,6 @@
                                                             ❌
                                                         </button>
                                                     </form>
-                                                @else
-                                                    <!-- Tombol Reset Status (BARU) -->
-                                                    <form
-                                                        action="{{ route('terapis.jadwal.updateStatus', $jadwal->id) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <input type="hidden" name="status" value="terjadwal">
-                                                        <button type="submit"
-                                                            class="text-blue-600 hover:text-blue-900 font-bold flex items-center"
-                                                            onclick="return confirm('Reset status menjadi TERJADWAL?')">
-                                                            <span class="text-lg mr-1">📅</span>
-                                                        </button>
-                                                    </form>
                                                 @endif
                                             </div>
                                         </td>
@@ -229,8 +199,7 @@
                                                         stroke-width="1.5"
                                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
-                                                <p class="text-base font-medium">Tidak ada jadwal untuk periode ini.
-                                                </p>
+                                                <p class="text-base font-medium">Tidak ada jadwal untuk periode ini.</p>
                                                 <p class="text-sm">Coba ubah filter tanggal di atas.</p>
                                             </div>
                                         </td>
