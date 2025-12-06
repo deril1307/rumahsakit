@@ -7,7 +7,10 @@ use App\Http\Controllers\Kepala\KepalaLaporanController;
 // PENTING: Tambahkan ini agar JadwalController dikenali
 use App\Http\Controllers\Admin\JadwalController;
 // PENTING: Tambahkan ini untuk TerapisDashboardController
-use App\Http\Controllers\Terapis\TerapisDashboardController; 
+use App\Http\Controllers\Terapis\TerapisDashboardController;
+// PENTING: Tambahkan ini untuk KepalaDashboardController agar route dashboard kepala berfungsi
+use App\Http\Controllers\Kepala\KepalaDashboardController; 
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -79,15 +82,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::delete('/admin/jadwal/{id}', [JadwalController::class, 'destroy'])->name('admin.jadwal.destroy');
 
     // Route Cetak PDF (TIKET):
-    // Menggunakan {id} jadwal, bukan {id_pasien}
     Route::get('/admin/jadwal/{id}/cetak', [JadwalController::class, 'cetak'])->name('admin.jadwal.cetak');
 
     // Laporan & Cetak
     Route::get('/admin/laporan', [AdminDashboardController::class, 'laporanIndex'])
          ->name('admin.laporan.index');
     
-    // Route Cetak Lama (Saya rename agar tidak bentrok dengan tiket jadwal diatas)
-    // Route ini sepertinya untuk cetak seluruh riwayat pasien
+    // Route Cetak Lama
     Route::get('/admin/jadwal/{id_pasien}/cetak-riwayat', [AdminDashboardController::class, 'cetakJadwal'])
          ->name('admin.jadwal.cetak_riwayat');
 });
@@ -101,16 +102,15 @@ Route::middleware(['auth', 'verified', 'role:terapis'])->group(function () {
     Route::get('/terapis/dashboard', [TerapisDashboardController::class, 'index'])
          ->name('terapis.dashboard');
 
-    // Route untuk update status via Tombol Cepat (Patch)
+    // Route untuk update status via Tombol Cepat
     Route::patch('/terapis/jadwal/{id}/status', [TerapisDashboardController::class, 'updateStatus'])
          ->name('terapis.jadwal.updateStatus');
 
-    // Route Edit Jadwal (Tampilan Form Edit) - BARU
+    // Route Edit Jadwal Terapis
     Route::get('/terapis/jadwal/{id}/edit', [TerapisDashboardController::class, 'edit'])
          ->name('terapis.jadwal.edit');
          
-    // Route Proses Update (Simpan Perubahan dari Form Edit) - BARU
-    // Kita gunakan method updateStatus yang sama karena logikanya mirip
+    // Route Proses Update Terapis
     Route::put('/terapis/jadwal/{id}', [TerapisDashboardController::class, 'updateStatus'])
          ->name('terapis.jadwal.update');
 
@@ -120,12 +120,19 @@ Route::middleware(['auth', 'verified', 'role:terapis'])->group(function () {
 // ========== ROUTES KEPALA ===================
 // ============================================
 Route::middleware(['auth', 'verified', 'role:kepala'])->group(function () {
-    Route::get('/kepala/dashboard', function () {
-        return view('kepala.dashboard');
-    })->name('kepala.dashboard');
+    
+    // Dashboard Kepala (INI YANG DIPERBAIKI)
+    // Sekarang mengarah ke Controller, bukan view langsung, agar variabel $totalSesi ada datanya
+    Route::get('/kepala/dashboard', [KepalaDashboardController::class, 'index'])
+        ->name('kepala.dashboard');
 
+    // Laporan Kepala (Method Index)
     Route::get('/kepala/laporan', [KepalaLaporanController::class, 'index'])
          ->name('kepala.laporan');
+         
+    // Cetak Laporan Kepala (Method Baru)
+    Route::get('/kepala/laporan/cetak', [KepalaLaporanController::class, 'cetakPdf'])
+         ->name('kepala.laporan.cetak');
 });
 
 // ============================================
