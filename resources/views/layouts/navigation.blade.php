@@ -17,7 +17,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                                    d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                             </svg>
                             {{ __('Dashboard') }}
                         </x-nav-link>
@@ -32,7 +32,7 @@
                             {{ __('Jadwal') }}
                         </x-nav-link>
 
-                        <x-nav-link :href="route('admin.pasien.index')" :active="request()->routeIs('admin.pasien.index')" class="flex items-center gap-2">
+                        <x-nav-link :href="route('admin.pasien.index')" :active="request()->routeIs('admin.pasien.*')" class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -41,11 +41,11 @@
                             {{ __('Pasien') }}
                         </x-nav-link>
 
-                        <x-nav-link :href="route('admin.terapis.index')" :active="request()->routeIs('admin.terapis.index')" class="flex items-center gap-2">
+                        <x-nav-link :href="route('admin.terapis.index')" :active="request()->routeIs('admin.terapis.*')" class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                             </svg>
                             {{ __('Terapis') }}
                         </x-nav-link>
@@ -59,7 +59,7 @@
                             {{ __('Laporan') }}
                         </x-nav-link>
 
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index') || request()->routeIs('admin.users.edit')" class="flex items-center gap-2">
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -107,6 +107,85 @@
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Dropdown Notifikasi -->
+                @php
+                    $notifCount = 0;
+                    if (Auth::user()->hasRole('terapis')) {
+                        $notifCount = \App\Models\Jadwal::where('user_id', Auth::id())
+                            ->whereDate('tanggal', \Carbon\Carbon::today())
+                            ->where('status', 'terjadwal')
+                            ->count();
+                    } elseif (Auth::user()->hasRole('admin')) {
+                        $notifCount = \App\Models\Jadwal::whereDate('tanggal', \Carbon\Carbon::today())
+                            ->whereIn('status', ['terjadwal', 'pending'])
+                            ->count();
+                    }
+                @endphp
+
+                <x-dropdown align="right" width="60">
+                    <x-slot name="trigger">
+                        <div class="relative mr-4 cursor-pointer">
+                            <button class="text-gray-500 hover:text-gray-700 focus:outline-none flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                                </svg>
+
+                                @if ($notifCount > 0)
+                                    <span
+                                        class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                                        {{ $notifCount }}
+                                    </span>
+                                @endif
+                            </button>
+                        </div>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <div class="w-60">
+                            <div class="px-4 py-2 border-b border-gray-100 font-semibold text-gray-700">
+                                Notifikasi
+                            </div>
+
+                            @if ($notifCount > 0)
+                                <div class="px-4 py-3 text-sm text-gray-600">
+                                    @if (Auth::user()->hasRole('terapis'))
+                                        <p>Anda memiliki <span
+                                                class="font-bold text-indigo-600">{{ $notifCount }}</span> jadwal
+                                            terapi baru hari ini.</p>
+                                    @elseif(Auth::user()->hasRole('admin'))
+                                        <p>Ada <span class="font-bold text-indigo-600">{{ $notifCount }}</span>
+                                            jadwal pasien yang perlu dipantau hari ini.</p>
+                                    @else
+                                        <p>Ada pembaruan sistem.</p>
+                                    @endif
+                                </div>
+                                <div class="border-t border-gray-100">
+                                    @if (Auth::user()->hasRole('terapis'))
+                                        <x-dropdown-link :href="route('terapis.dashboard')">
+                                            {{ __('Lihat Jadwal Saya') }}
+                                        </x-dropdown-link>
+                                    @elseif(Auth::user()->hasRole('admin'))
+                                        <x-dropdown-link :href="route('admin.dashboard')">
+                                            {{ __('Lihat Dashboard') }}
+                                        </x-dropdown-link>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <svg class="mx-auto h-8 w-8 text-gray-300 mb-2" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                    </svg>
+                                    Tidak ada pembaruan saat ini.
+                                </div>
+                            @endif
+                        </div>
+                    </x-slot>
+                </x-dropdown>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
