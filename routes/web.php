@@ -88,6 +88,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/laporan', [AdminDashboardController::class, 'laporanIndex'])
          ->name('admin.laporan.index');
     
+    // ===> TAMBAHAN BARU: ROUTE EKSPOR PDF ADMIN <===
+    Route::get('/admin/laporan/pdf', [AdminDashboardController::class, 'exportPdf'])
+         ->name('admin.laporan.pdf');
+    
     // Route Cetak Lama
     Route::get('/admin/jadwal/{id_pasien}/cetak-riwayat', [AdminDashboardController::class, 'cetakJadwal'])
          ->name('admin.jadwal.cetak_riwayat');
@@ -121,8 +125,7 @@ Route::middleware(['auth', 'verified', 'role:terapis'])->group(function () {
 // ============================================
 Route::middleware(['auth', 'verified', 'role:kepala'])->group(function () {
     
-    // Dashboard Kepala (INI YANG DIPERBAIKI)
-    // Sekarang mengarah ke Controller, bukan view langsung, agar variabel $totalSesi ada datanya
+    // Dashboard Kepala
     Route::get('/kepala/dashboard', [KepalaDashboardController::class, 'index'])
         ->name('kepala.dashboard');
 
