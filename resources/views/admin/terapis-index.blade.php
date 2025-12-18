@@ -54,36 +54,110 @@
                 {{-- Notifikasi --}}
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                        {{ session('success') }}</div>
+                        {{ session('success') }}
+                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
+                            <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                        </button>
+                    </div>
                 @endif
                 @if(session('updated'))
                     <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4">
-                        {{ session('updated') }}</div>
+                        {{ session('updated') }}
+                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
+                            <svg class="fill-current h-6 w-6 text-blue-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                        </button>
+                    </div>
                 @endif
                 @if(session('deleted'))
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                        {{ session('deleted') }}</div>
+                        {{ session('deleted') }}
+                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
+                            <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                        </button>
+                    </div>
                 @endif
 
+                {{-- ============================================ --}}
+                {{-- CARD: FILTER & PENCARIAN & TOMBOL TAMBAH --}}
+                {{-- ============================================ --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <div class="flex flex-wrap justify-between items-center gap-4">
-                            <form method="GET" action="{{ route('admin.terapis.index') }}"
-                                class="flex-grow sm:flex-grow-0 sm:w-1/2 relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
+                        
+                        {{-- 1. Filter Abjad (A-Z) --}}
+                        <div class="mb-4 flex flex-wrap gap-1 items-center justify-center sm:justify-start">
+                            <span class="mr-2 text-sm font-semibold text-gray-600">Filter Nama:</span>
+                            
+                            {{-- Tombol 'Semua' --}}
+                            <a href="{{ route('admin.terapis.index', array_merge(request()->except(['alpha', 'page']))) }}"
+                               class="px-2 py-1 text-xs border rounded transition-colors {{ !request('alpha') ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50' }}">
+                               Semua
+                            </a>
+                            
+                            {{-- Loop A-Z --}}
+                            @foreach(range('A', 'Z') as $char)
+                                <a href="{{ route('admin.terapis.index', array_merge(request()->except('page'), ['alpha' => $char])) }}"
+                                   class="px-2 py-1 text-xs border rounded transition-colors {{ request('alpha') == $char ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50' }}">
+                                   {{ $char }}
+                                </a>
+                            @endforeach
+                        </div>
+
+                        <hr class="mb-4 border-gray-200">
+
+                        {{-- 2. Form Filter, Pencarian & Tombol --}}
+                        <div class="flex flex-col sm:flex-row justify-between gap-4">
+
+                            {{-- Form Search + Filter Status --}}
+                            <form method="GET" action="{{ route('admin.terapis.index') }}" class="flex flex-wrap gap-2 w-full sm:w-auto flex-grow">
+                                
+                                {{-- Input Hidden untuk menjaga filter Abjad saat menekan tombol cari --}}
+                                @if(request('alpha'))
+                                    <input type="hidden" name="alpha" value="{{ request('alpha') }}">
+                                @endif
+
+                                {{-- Dropdown Status --}}
+                                <select name="status" 
+                                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2"
+                                        onchange="this.form.submit()">
+                                    <option value="">- Semua Status -</option>
+                                    <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="Nonaktif" {{ request('status') == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                                </select>
+
+                                {{-- Input Text Pencarian --}}
+                                <div class="relative flex-grow min-w-[200px]">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="search" value="{{ request('search') }}"
+                                        class="w-full pl-10 pr-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2"
+                                        placeholder="Cari Nama / NIP / Spesialisasi..." />
+                                    
+                                    {{-- Tombol X (Clear Search) --}}
+                                    @if (request('search'))
+                                        <a href="{{ route('admin.terapis.index', request()->except(['search', 'page'])) }}"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500"
+                                            title="Hapus pencarian">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </a>
+                                    @endif
                                 </div>
-                                <x-text-input type="text" name="search" value="{{ request('search') }}"
-                                    class="w-full pl-10" placeholder="Cari Nama / NIP / Spesialisasi (Enter)" />
+
+                                {{-- Tombol CARI (ENTER) --}}
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    Cari
+                                </button>
+
                             </form>
 
-                            <div class="flex items-center space-x-2">
+                            {{-- Tombol Tambah Terapis --}}
+                            <div class="flex-shrink-0">
                                 <button @click="openAddModal()"
-                                    class="inline-flex items-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800 focus:bg-green-700 transition ease-in-out duration-150">
+                                    class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800 focus:bg-green-700 transition ease-in-out duration-150 py-2">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 4v16m8-8H4"></path>
@@ -92,6 +166,17 @@
                                 </button>
                             </div>
                         </div>
+
+                        {{-- Info Hasil Filter --}}
+                        @if(request('search') || request('alpha') || request('status'))
+                            <div class="mt-3 text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                                <span class="font-bold">Filter aktif:</span>
+                                @if(request('alpha')) <span class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs">Abjad: {{ request('alpha') }}</span> @endif
+                                @if(request('status')) <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">Status: {{ request('status') }}</span> @endif
+                                @if(request('search')) <span class="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs">Cari: "{{ request('search') }}"</span> @endif
+                            </div>
+                        @endif
+
                     </div>
                 </div>
 
@@ -100,7 +185,25 @@
 
                         @if ($terapisList->isEmpty())
                             <div class="text-center py-12">
-                                <p class="text-gray-500">Tidak ada data terapis ditemukan.</p>
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada data terapis</h3>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    @if (request('search') || request('alpha') || request('status'))
+                                        Tidak ditemukan data dengan filter yang dipilih.
+                                    @else
+                                        Mulai dengan menambahkan terapis baru.
+                                    @endif
+                                </p>
+                                @if (request('search') || request('alpha') || request('status'))
+                                    <div class="mt-6">
+                                        <a href="{{ route('admin.terapis.index') }}"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                            Reset Filter
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                         @else
                             <div class="overflow-x-auto">
@@ -132,7 +235,7 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @foreach ($terapisList as $terapis)
-                                            <tr>
+                                            <tr class="hover:bg-gray-50 transition-colors duration-150">
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {{ $terapisList->firstItem() + $loop->index }}
                                                 </td>
@@ -160,7 +263,7 @@
                                                                         no_telp: '{{ $terapis->no_telp }}',
                                                                         email: '{{ $terapis->email }}',
                                                                         status: '{{ $terapis->status }}'
-                                                                    })" class="text-yellow-600 hover:text-yellow-900"
+                                                                    })" class="text-yellow-600 hover:text-yellow-900 transition-colors"
                                                             title="Edit">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -172,7 +275,7 @@
                                                         {{-- Tombol Hapus --}}
                                                         <button
                                                             @click="openDeleteModal('{{ route('admin.terapis.destroy', $terapis->id) }}', '{{ addslashes($terapis->name) }}')"
-                                                            class="text-red-600 hover:text-red-900" title="Hapus">
+                                                            class="text-red-600 hover:text-red-900 transition-colors" title="Hapus">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"

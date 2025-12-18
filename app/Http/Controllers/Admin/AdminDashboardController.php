@@ -100,16 +100,29 @@ class AdminDashboardController extends Controller
     {
         try {
             $search = $request->input('search');
+            $alpha  = $request->input('alpha');  // Input baru untuk abjad
+            $status = $request->input('status'); // Input baru untuk status
 
             $pasienList = Pasien::query()
+                // 1. Filter Pencarian Teks (Search)
                 ->when($search, function ($query, $search) {
-                    return $query->where('nama', 'like', "%{$search}%")
+                    return $query->where(function($q) use ($search) {
+                        $q->where('nama', 'like', "%{$search}%")
                         ->orWhere('no_rm', 'like', "%{$search}%")
                         ->orWhere('no_telp', 'like', "%{$search}%");
+                    });
+                })
+                // 2. Filter Abjad (A-Z) berdasarkan Nama
+                ->when($alpha, function ($query, $alpha) {
+                    return $query->where('nama', 'like', "{$alpha}%");
+                })
+                // 3. Filter Status (Aktif/Nonaktif)
+                ->when($status, function ($query, $status) {
+                    return $query->where('status', $status);
                 })
                 ->latest()
                 ->paginate(10)
-                ->withQueryString();
+                ->withQueryString(); // Agar filter tidak hilang saat pindah halaman (pagination)
 
             return view('admin.pasien-index', compact('pasienList'));
 
@@ -193,18 +206,33 @@ class AdminDashboardController extends Controller
     {
         try {
             $search = $request->input('search');
+            $alpha  = $request->input('alpha');  // Filter Abjad
+            $status = $request->input('status'); // Filter Status
+
             $terapisList = User::role('terapis')
+                // 1. Filter Pencarian Teks
                 ->when($search, function ($query, $search) {
-                    return $query->where('name', 'like', "%{$search}%")
+                    return $query->where(function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
                         ->orWhere('nip', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('spesialisasi', 'like', "%{$search}%");
+                    });
+                })
+                // 2. Filter Abjad (A-Z) pada Nama
+                ->when($alpha, function ($query, $alpha) {
+                    return $query->where('name', 'like', "{$alpha}%");
+                })
+                // 3. Filter Status
+                ->when($status, function ($query, $status) {
+                    return $query->where('status', $status);
                 })
                 ->latest()
                 ->paginate(10)
                 ->withQueryString();
 
             $spesialisasiOptions = ['Fisioterapi', 'Terapi Okupasi', 'Terapi Wicara', 'Fisioterapi Anak', 'Fisioterapi Stroke'];
+            
             return view('admin.terapis-index', compact('terapisList', 'spesialisasiOptions'));
 
         } catch (\Exception $e) {

@@ -120,62 +120,112 @@
                     </div>
                 @endif
 
-                {{-- CARD: Filter & Tambah --}}
+                {{-- ============================================ --}}
+                {{-- CARD: FILTER & PENCARIAN & TOMBOL TAMBAH --}}
+                {{-- ============================================ --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <div class="flex flex-wrap justify-between items-center gap-4">
+                        
+                        {{-- 1. Filter Abjad (A-Z) --}}
+                        <div class="mb-4 flex flex-wrap gap-1 items-center justify-center sm:justify-start">
+                            <span class="mr-2 text-sm font-semibold text-gray-600">Filter Nama:</span>
+                            
+                            {{-- Tombol 'Semua' --}}
+                            <a href="{{ route('admin.pasien.index', array_merge(request()->except(['alpha', 'page']))) }}"
+                               class="px-2 py-1 text-xs border rounded transition-colors {{ !request('alpha') ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50' }}">
+                               Semua
+                            </a>
+                            
+                            {{-- Loop A-Z --}}
+                            @foreach(range('A', 'Z') as $char)
+                                <a href="{{ route('admin.pasien.index', array_merge(request()->except('page'), ['alpha' => $char])) }}"
+                                   class="px-2 py-1 text-xs border rounded transition-colors {{ request('alpha') == $char ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50' }}">
+                                   {{ $char }}
+                                </a>
+                            @endforeach
+                        </div>
 
-                            {{-- SEARCH FORM --}}
-                            <form method="GET" action="{{ route('admin.pasien.index') }}"
-                                class="flex-grow sm:flex-grow-0 sm:w-1/2 relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <input type="text" name="search" value="{{ request('search') }}"
-                                    class="w-full pl-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                    placeholder="Cari Nama / No. RM / No. Telp (Enter untuk cari)" />
+                        <hr class="mb-4 border-gray-200">
 
-                                {{-- Tombol Clear Search --}}
-                                @if (request('search'))
-                                    <a href="{{ route('admin.pasien.index') }}"
-                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                                        title="Clear search">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </a>
+                        {{-- 2. Form Filter, Pencarian & Tombol --}}
+                        <div class="flex flex-col sm:flex-row justify-between gap-4">
+
+                            {{-- Form Search + Filter Status --}}
+                            <form method="GET" action="{{ route('admin.pasien.index') }}" class="flex flex-wrap gap-2 w-full sm:w-auto flex-grow">
+                                
+                                {{-- Input Hidden untuk menjaga filter Abjad saat menekan tombol cari --}}
+                                @if(request('alpha'))
+                                    <input type="hidden" name="alpha" value="{{ request('alpha') }}">
                                 @endif
+
+                                {{-- Dropdown Status --}}
+                                <select name="status" 
+                                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2"
+                                        onchange="this.form.submit()">
+                                    <option value="">- Semua Status -</option>
+                                    <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="Nonaktif" {{ request('status') == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                                </select>
+
+                                {{-- Input Text Pencarian --}}
+                                <div class="relative flex-grow min-w-[200px]">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="search" value="{{ request('search') }}"
+                                        class="w-full pl-10 pr-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2"
+                                        placeholder="Cari Nama / No. RM / No. Telp..." />
+                                    
+                                    {{-- Tombol X (Clear Search) --}}
+                                    @if (request('search'))
+                                        <a href="{{ route('admin.pasien.index', request()->except(['search', 'page'])) }}"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500"
+                                            title="Hapus pencarian">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </a>
+                                    @endif
+                                </div>
+
+                                {{-- Tombol CARI (ENTER) --}}
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    Cari
+                                </button>
+
                             </form>
 
-                            {{-- Info hasil search --}}
-                            @if (request('search'))
-                                <div class="text-sm text-gray-600">
-                                    Ditemukan <strong>{{ $pasienList->total() }}</strong> pasien untuk
-                                    "<strong>{{ request('search') }}</strong>"
-                                </div>
-                            @endif
-
-                            {{-- Tombol Tambah --}}
-                            <div class="flex items-center space-x-2">
+                            {{-- Tombol Tambah Pasien --}}
+                            <div class="flex-shrink-0">
                                 <button @click="openAddModal()"
-                                    class="inline-flex items-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800 focus:bg-green-700 transition ease-in-out duration-150">
+                                    class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800 focus:bg-green-700 transition ease-in-out duration-150 py-2">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
-                                    Tambah Pasien Baru
+                                    Tambah Pasien
                                 </button>
                             </div>
+
                         </div>
+
+                        {{-- Info Hasil Filter --}}
+                        @if(request('search') || request('alpha') || request('status'))
+                            <div class="mt-3 text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                                <span class="font-bold">Filter aktif:</span>
+                                @if(request('alpha')) <span class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs">Abjad: {{ request('alpha') }}</span> @endif
+                                @if(request('status')) <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">Status: {{ request('status') }}</span> @endif
+                                @if(request('search')) <span class="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs">Cari: "{{ request('search') }}"</span> @endif
+                            </div>
+                        @endif
+
                     </div>
                 </div>
 
-                {{-- CARD: Tabel Pasien --}}
+                {{-- ============================================ --}}
+                {{-- CARD: TABEL DATA PASIEN --}}
+                {{-- ============================================ --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
 
@@ -189,17 +239,17 @@
                                 </svg>
                                 <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada data pasien</h3>
                                 <p class="mt-1 text-sm text-gray-500">
-                                    @if (request('search'))
-                                        Tidak ditemukan pasien dengan kata kunci "{{ request('search') }}"
+                                    @if (request('search') || request('alpha') || request('status'))
+                                        Tidak ditemukan data dengan filter yang dipilih.
                                     @else
                                         Mulai dengan menambahkan pasien baru
                                     @endif
                                 </p>
-                                @if (request('search'))
+                                @if (request('search') || request('alpha') || request('status'))
                                     <div class="mt-6">
                                         <a href="{{ route('admin.pasien.index') }}"
                                             class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                            Lihat Semua Pasien
+                                            Reset Filter
                                         </a>
                                     </div>
                                 @endif
@@ -210,29 +260,22 @@
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            {{-- KOLOM NOMOR (DITAMBAHKAN DI SINI) --}}
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                                 No
                                             </th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                                 Nama Pasien
                                             </th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                                 No. RM
                                             </th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                                 No. Telp
                                             </th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                                 Status
                                             </th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                                 Aksi
                                             </th>
                                         </tr>
@@ -240,7 +283,7 @@
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @foreach ($pasienList as $pasien)
                                             <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                                {{-- DATA NOMOR (DITAMBAHKAN DI SINI) --}}
+                                                {{-- Nomor Urut --}}
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {{ $pasienList->firstItem() + $loop->index }}
                                                 </td>
