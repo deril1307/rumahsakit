@@ -17,19 +17,40 @@ class JadwalController extends Controller
     /**
      * Menampilkan daftar jadwal (Kalender/List)
      */
-    public function index()
-    {
-        // Mengambil data jadwal dengan relasi, diurutkan berdasarkan tanggal terbaru
-        $jadwals = Jadwal::with(['pasien', 'terapis'])
-                    ->orderBy('tanggal', 'desc')
-                    ->orderBy('jam_mulai', 'asc')
-                    ->get();
-        return view('admin.jadwal.index', compact('jadwals'));
-    }
+    // public function index()
+    // {
+    //     // Mengambil data jadwal dengan relasi, diurutkan berdasarkan tanggal terbaru
+    //     $jadwals = Jadwal::with(['pasien', 'terapis'])
+    //                 ->orderBy('tanggal', 'desc')
+    //                 ->orderBy('jam_mulai', 'asc')
+    //                 ->get();
+    //     return view('admin.jadwal.index', compact('jadwals'));
+    // }
 
     /**
      * Menampilkan form tambah jadwal
      */
+
+    public function index(Request $request)
+    {
+        // Ambil kata kunci pencarian
+        $search = $request->input('search');
+
+        // Query Jadwal dengan Relasi
+        $jadwals = Jadwal::with(['pasien', 'terapis'])
+            // Logika Pencarian Nama Pasien
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('pasien', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('tanggal', 'desc')     // Urutkan tanggal terbaru
+            ->orderBy('jam_mulai', 'asc')    // Urutkan jam
+            ->paginate(10)                   // Gunakan Pagination (10 per halaman)
+            ->withQueryString();             // Agar pencarian tidak hilang saat klik halaman 2
+
+        return view('admin.jadwal.index', compact('jadwals'));
+    }
     public function create()
     {
         $pasiens = Pasien::all();

@@ -8,7 +8,6 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <!-- Pesan Sukses -->
             @if (session('success'))
                 <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
                     role="alert">
@@ -16,7 +15,6 @@
                 </div>
             @endif
 
-            <!-- Pesan Error -->
             @if ($errors->any())
                 <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <ul class="list-disc pl-5">
@@ -30,44 +28,93 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-medium text-gray-900">Daftar Jadwal Terapi</h3>
+                    {{-- HEADER: Judul, Form Pencarian & Tombol Tambah --}}
+                    {{-- PERBAIKAN: Layout diatur agar pencarian lebih leluasa --}}
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        
+                        {{-- Bagian Kiri: Judul & Search --}}
+                        {{-- PERBAIKAN: Menghapus w-2/3 agar area ini bisa melebar sesuai isi (form search) --}}
+                        <div class="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
+                            <h3 class="text-lg font-medium text-gray-900 whitespace-nowrap">Daftar Jadwal Pasien</h3>
+
+                            {{-- FORM PENCARIAN --}}
+                            {{-- PERBAIKAN: Mengganti 'sm:w-auto' menjadi 'sm:w-96' (lebih lebar/panjang ke kanan) --}}
+                            <form method="GET" action="{{ route('admin.jadwal.index') }}" class="w-full sm:w-96 flex gap-2">
+                                
+                                {{-- Wrapper Input --}}
+                                <div class="relative flex-grow">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="search" value="{{ request('search') }}"
+                                        class="w-full pl-10 pr-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                        placeholder="Cari Nama Pasien..." />
+
+                                    {{-- Tombol X (Hapus Pencarian) --}}
+                                    @if (request('search'))
+                                        <a href="{{ route('admin.jadwal.index') }}"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500"
+                                            title="Hapus pencarian">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </a>
+                                    @endif
+                                </div>
+
+                                {{-- TOMBOL CARI --}}
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition duration-150">
+                                    Cari
+                                </button>
+                            </form>
+                        </div>
+
+                        {{-- Bagian Kanan: Tombol Tambah --}}
                         <a href="{{ route('admin.jadwal.create') }}"
-                            class="bg-green-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
+                            class="w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded shadow text-center transition duration-150">
                             + Buat Jadwal Baru
                         </a>
                     </div>
+
+                    {{-- Info Hasil Pencarian --}}
+                    @if(request('search'))
+                        <div class="mb-4 text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                            Menampilkan jadwal untuk pasien dengan nama: <strong>"{{ request('search') }}"</strong>
+                        </div>
+                    @endif
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Tanggal & Jam</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Pasien</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Terapis</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Jenis Terapi</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Ruangan</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Aksi</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Tanggal & Jam
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Pasien
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Terapis
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Jenis Terapi
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ruangan
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Aksi
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse ($jadwals as $jadwal)
-                                    <tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
@@ -79,16 +126,17 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
-                                                {{ $jadwal->pasien->nama ?? '-' }}</div>
-                                            <div class="text-sm text-gray-500">RM: {{ $jadwal->pasien->no_rm ?? '-' }}
+                                                {{ $jadwal->pasien->nama ?? '-' }}
+                                            </div>
+                                            <div class="text-sm text-gray-500">
+                                                RM: {{ $jadwal->pasien->no_rm ?? '-' }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ $jadwal->terapis->name ?? '-' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full  text-gray-800">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-100">
                                                 {{ $jadwal->jenis_terapi }}
                                             </span>
                                         </td>
@@ -98,15 +146,14 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @php
                                                 $statusClasses = [
-                                                    'terjadwal' => 'bg-yellow-100 text-yellow-800',
-                                                    'selesai' => 'bg-green-100 text-green-800',
-                                                    'batal' => 'bg-red-100 text-red-800',
-                                                    'pending' => 'bg-gray-100 text-gray-800',
+                                                    'terjadwal' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                                                    'selesai'   => 'bg-green-100 text-green-800 border-green-200',
+                                                    'batal'     => 'bg-red-100 text-red-800 border-red-200',
+                                                    'pending'   => 'bg-gray-100 text-gray-800 border-gray-200',
                                                 ];
                                                 $class = $statusClasses[$jadwal->status] ?? 'bg-gray-100 text-gray-800';
                                             @endphp
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $class }}">
+                                            <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full border {{ $class }}">
                                                 {{ ucfirst($jadwal->status) }}
                                             </span>
                                         </td>
@@ -124,7 +171,7 @@
                                                     </svg>
                                                 </a>
 
-                                                {{-- TOMBOL CETAK PDF (BARU) --}}
+                                                {{-- TOMBOL CETAK PDF --}}
                                                 <a href="{{ route('admin.jadwal.cetak', $jadwal->id) }}"
                                                     target="_blank" class="text-indigo-600 hover:text-indigo-900"
                                                     title="Cetak PDF">
@@ -158,14 +205,24 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7"
-                                            class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                                            Belum ada jadwal yang dibuat.
+                                        <td colspan="7" class="px-6 py-12 whitespace-nowrap text-center text-sm text-gray-500">
+                                            @if(request('search'))
+                                                Tidak ditemukan jadwal untuk pasien bernama "<strong>{{ request('search') }}</strong>"
+                                            @else
+                                                Belum ada jadwal yang dibuat.
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- PAGINATION LINK --}}
+                    <div class="mt-4">
+                        @if(method_exists($jadwals, 'links'))
+                            {{ $jadwals->links() }}
+                        @endif
                     </div>
 
                 </div>
