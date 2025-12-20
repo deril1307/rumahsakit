@@ -29,20 +29,24 @@
                 <div class="p-6 text-gray-900">
 
                     {{-- HEADER: Judul, Form Pencarian & Tombol Tambah --}}
-                    {{-- PERBAIKAN: Layout diatur agar pencarian lebih leluasa --}}
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    {{-- Layout Wrapper Utama --}}
+                    <div class="flex flex-col lg:flex-row gap-4 mb-6 items-center justify-between">
                         
-                        {{-- Bagian Kiri: Judul & Search --}}
-                        {{-- PERBAIKAN: Menghapus w-2/3 agar area ini bisa melebar sesuai isi (form search) --}}
-                        <div class="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
-                            <h3 class="text-lg font-medium text-gray-900 whitespace-nowrap">Daftar Jadwal Pasien</h3>
+                        {{-- GROUP KIRI (Judul + Search) --}}
+                        {{-- Class 'flex-grow' di sini membuat group ini mengambil semua sisa ruang di sebelah kiri tombol tambah --}}
+                        <div class="flex flex-col md:flex-row gap-4 w-full lg:w-auto flex-grow items-center">
+                            
+                            {{-- Judul --}}
+                            <h3 class="text-lg font-medium text-gray-900 whitespace-nowrap">
+                                Daftar Jadwal Pasien
+                            </h3>
 
                             {{-- FORM PENCARIAN --}}
-                            {{-- PERBAIKAN: Mengganti 'sm:w-auto' menjadi 'sm:w-96' (lebih lebar/panjang ke kanan) --}}
-                            <form method="GET" action="{{ route('admin.jadwal.index') }}" class="w-full sm:w-96 flex gap-2">
+                            {{-- PERBAIKAN: Menggunakan 'w-full' dan 'flex-grow' agar mengisi seluruh ruang kosong di tengah --}}
+                            <form method="GET" action="{{ route('admin.jadwal.index') }}" class="w-full flex flex-grow gap-2">
                                 
                                 {{-- Wrapper Input --}}
-                                <div class="relative flex-grow">
+                                <div class="relative flex-grow w-full">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -65,15 +69,16 @@
                                 </div>
 
                                 {{-- TOMBOL CARI --}}
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition duration-150">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition duration-150 flex-shrink-0">
                                     Cari
                                 </button>
                             </form>
                         </div>
 
-                        {{-- Bagian Kanan: Tombol Tambah --}}
+                        {{-- GROUP KANAN (Tombol Tambah) --}}
+                        {{-- Menggunakan 'flex-shrink-0' agar tombol tidak mengecil terdesak search bar --}}
                         <a href="{{ route('admin.jadwal.create') }}"
-                            class="w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded shadow text-center transition duration-150">
+                            class="w-full lg:w-auto bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded shadow text-center transition duration-150 whitespace-nowrap flex-shrink-0">
                             + Buat Jadwal Baru
                         </a>
                     </div>

@@ -88,7 +88,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/laporan', [AdminDashboardController::class, 'laporanIndex'])
          ->name('admin.laporan.index');
     
-    // ===> TAMBAHAN BARU: ROUTE EKSPOR PDF ADMIN <===
+    // ===> TAMBAHAN BARU: ROUTE EKSPOR PDF <===
     Route::get('/admin/laporan/pdf', [AdminDashboardController::class, 'exportPdf'])
          ->name('admin.laporan.pdf');
     
