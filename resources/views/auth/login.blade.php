@@ -27,24 +27,20 @@
                     Selamat Datang
                 </h1>
             </div>
-
-            {{-- Form Container (Lebih Lebar dan Tanpa Shadow Tebal) --}}
             <div class="w-full sm:max-w-md px-6 py-4 bg-transparent">
-                
                 <x-auth-session-status class="mb-4" :status="session('status')" />
-
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
                     <div class="mb-4">
-                        <label for="email" class="block font-bold text-sm text-gray-700 mb-1">Username</label>
+                        <label for="email" class="block font-bold text-sm text-gray-700 mb-1">Email</label>
                         <input id="email" 
                                class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 py-3 px-4 text-gray-600" 
                                type="email" 
                                name="email" 
                                :value="old('email')" 
-                               placeholder="Masukkan username Anda"
-                               required autofocus autocomplete="username" />
+                               placeholder="Masukkan email Anda"
+                               required autofocus autocomplete="email" />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 

@@ -29,11 +29,9 @@
                 <div class="p-6 text-gray-900">
 
                     {{-- HEADER: Judul, Form Pencarian & Tombol Tambah --}}
-                    {{-- Layout Wrapper Utama --}}
                     <div class="flex flex-col lg:flex-row gap-4 mb-6 items-center justify-between">
                         
                         {{-- GROUP KIRI (Judul + Search) --}}
-                        {{-- Class 'flex-grow' di sini membuat group ini mengambil semua sisa ruang di sebelah kiri tombol tambah --}}
                         <div class="flex flex-col md:flex-row gap-4 w-full lg:w-auto flex-grow items-center">
                             
                             {{-- Judul --}}
@@ -42,7 +40,6 @@
                             </h3>
 
                             {{-- FORM PENCARIAN --}}
-                            {{-- PERBAIKAN: Menggunakan 'w-full' dan 'flex-grow' agar mengisi seluruh ruang kosong di tengah --}}
                             <form method="GET" action="{{ route('admin.jadwal.index') }}" class="w-full flex flex-grow gap-2">
                                 
                                 {{-- Wrapper Input --}}
@@ -76,7 +73,6 @@
                         </div>
 
                         {{-- GROUP KANAN (Tombol Tambah) --}}
-                        {{-- Menggunakan 'flex-shrink-0' agar tombol tidak mengecil terdesak search bar --}}
                         <a href="{{ route('admin.jadwal.create') }}"
                             class="w-full lg:w-auto bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded shadow text-center transition duration-150 whitespace-nowrap flex-shrink-0">
                             + Buat Jadwal Baru
@@ -137,16 +133,17 @@
                                                 RM: {{ $jadwal->pasien->no_rm ?? '-' }}
                                             </div>
                                         </td>
+                                        {{-- KOLOM TERAPIS (Acuan Style) --}}
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ $jadwal->terapis->name ?? '-' }}</div>
                                         </td>
+                                        {{-- KOLOM JENIS TERAPI (Disamakan Style-nya dengan Terapis) --}}
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-100">
-                                                {{ $jadwal->jenis_terapi }}
-                                            </span>
+                                            <div class="text-sm text-gray-900">{{ $jadwal->jenis_terapi }}</div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $jadwal->ruangan ?? '-' }}
+                                        {{-- KOLOM RUANGAN (Disamakan Style-nya dengan Terapis) --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">{{ $jadwal->ruangan ?? '-' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @php
