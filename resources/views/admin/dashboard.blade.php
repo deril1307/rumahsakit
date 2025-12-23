@@ -88,17 +88,20 @@
 
                         <!-- FORM PENCARIAN -->
                         <!-- Mengirim request GET ke route admin.pasien.index dengan parameter 'search' -->
-                        <form action="{{ route('admin.pasien.index') }}" method="GET" class="relative flex-grow">
-                            <input type="text" name="search"
-                                class="w-full text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                placeholder="Ketik Nama / No. RM lalu Enter...">
-                            <button type="submit"
-                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-indigo-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                            </button>
+                        <form action="{{ route('admin.pasien.index') }}" method="GET" class="flex-grow">
+                            <div class="relative w-full">
+                                <input type="text" name="search"
+                                    class="w-full text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 pr-10"
+                                    placeholder="Ketik Nama / No. RM lalu Enter...">
+
+                                <button type="submit"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-indigo-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </form>
                         <p class="text-xs text-gray-500 mt-2 italic">*Tekan Enter untuk mencari di database pasien.</p>
                     </div>
