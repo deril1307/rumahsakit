@@ -291,17 +291,15 @@
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $pasien->nama }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $pasien->no_rm }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $pasien->no_telp }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <span
-                                                        class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $pasien->status == 'Aktif' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200' }} border">
-                                                        {{ $pasien->status }}
-                                                    </span>
+                                                {{-- STATUS BOLD & NETRAL --}}
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {{ $pasien->status }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     <div class="flex space-x-3">

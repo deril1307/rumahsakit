@@ -241,11 +241,11 @@
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $terapis->name }}</td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $terapis->nip ?? '-' }}</td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $terapis->spesialisasi ?? '-' }}</td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $terapis->no_telp ?? '-' }}</td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                                     <span
