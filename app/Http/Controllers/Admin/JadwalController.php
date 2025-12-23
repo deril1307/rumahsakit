@@ -11,28 +11,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf; // Pastikan Library PDF di-import
+// TAMBAHAN: Import Facade Artisan agar bisa menjalankan perintah command
+use Illuminate\Support\Facades\Artisan;
 
 class JadwalController extends Controller
 {
     /**
      * Menampilkan daftar jadwal (Kalender/List)
      */
-    // public function index()
-    // {
-    //     // Mengambil data jadwal dengan relasi, diurutkan berdasarkan tanggal terbaru
-    //     $jadwals = Jadwal::with(['pasien', 'terapis'])
-    //                 ->orderBy('tanggal', 'desc')
-    //                 ->orderBy('jam_mulai', 'asc')
-    //                 ->get();
-    //     return view('admin.jadwal.index', compact('jadwals'));
-    // }
-
-    /**
-     * Menampilkan form tambah jadwal
-     */
-
     public function index(Request $request)
     {
+        // ============================================================
+        // === TAMBAHAN: AUTO BATALKAN JADWAL SAAT MEMBUKA HALAMAN INI ===
+        // ============================================================
+        // Sistem akan mengecek dan membatalkan jadwal yang telat (No Show)
+        // tepat sebelum daftar jadwal ditampilkan ke Admin.
+        Artisan::call('jadwal:auto-batal');
+        // ============================================================
+
         // Ambil kata kunci pencarian
         $search = $request->input('search');
 
@@ -51,6 +47,10 @@ class JadwalController extends Controller
 
         return view('admin.jadwal.index', compact('jadwals'));
     }
+
+    /**
+     * Menampilkan form tambah jadwal
+     */
     public function create()
     {
         $pasiens = Pasien::all();

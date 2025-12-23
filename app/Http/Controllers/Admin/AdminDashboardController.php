@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+// TAMBAHAN: Import Facade Artisan agar bisa menjalankan perintah command
+use Illuminate\Support\Facades\Artisan; 
 use Barryvdh\DomPDF\Facade\Pdf; 
 use Carbon\Carbon;
 
@@ -21,6 +23,15 @@ class AdminDashboardController extends Controller
      */
     public function index()
     {
+        // ============================================================
+        // === TAMBAHAN: AUTO BATALKAN JADWAL SAAT MEMBUKA DASHBOARD ===
+        // ============================================================
+        // Ini akan menjalankan perintah 'jadwal:auto-batal' di background
+        // setiap kali Admin membuka halaman ini.
+        Artisan::call('jadwal:auto-batal');
+        // ============================================================
+
+
         // --- PERBAIKAN DISINI: Mengambil Data Real untuk Dashboard ---
 
         // 1. Statistik Ringkas

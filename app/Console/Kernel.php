@@ -12,7 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Jalankan perintah 'jadwal:auto-batal' setiap menit
+        // Sistem akan mengecek terus menerus apakah ada jadwal yang lewat waktu
+        $schedule->command('jadwal:auto-batal')->everyMinute();
     }
 
     /**
