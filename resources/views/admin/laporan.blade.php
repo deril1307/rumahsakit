@@ -73,14 +73,14 @@
                 <div class="p-6 text-gray-900">
 
                     <div class="flex justify-end mb-4 space-x-2">
-                        {{-- Tombol Excel (Non-aktif sementara kalau belum butuh) --}}
-                        <a href="#"
+                        {{-- TOMBOL EXCEL (SUDAH DIPERBAIKI) --}}
+                        {{-- Menggunakan route('admin.laporan.excel') dan membawa parameter filter --}}
+                        <a href="{{ route('admin.laporan.excel', request()->query()) }}"
                             class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                             Ekspor ke Excel
                         </a>
 
-                        {{-- TOMBOL PDF YANG SUDAH DIPERBAIKI --}}
-                        {{-- request()->query() penting agar filter tanggal/terapis ikut terbawa saat cetak PDF --}}
+                        {{-- TOMBOL PDF --}}
                         <a href="{{ route('admin.laporan.pdf', request()->query()) }}" target="_blank"
                             class="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-md hover:bg-orange-600">
                             Ekspor ke PDF

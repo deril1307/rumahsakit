@@ -91,6 +91,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // ===> TAMBAHAN BARU: ROUTE EKSPOR PDF <===
     Route::get('/admin/laporan/pdf', [AdminDashboardController::class, 'exportPdf'])
          ->name('admin.laporan.pdf');
+
+    // ===> TAMBAHAN BARU: ROUTE EKSPOR EXCEL <===
+    Route::get('/admin/laporan/excel', [AdminDashboardController::class, 'exportExcel'])
+         ->name('admin.laporan.excel');
     
     // Route Cetak Lama
     Route::get('/admin/jadwal/{id_pasien}/cetak-riwayat', [AdminDashboardController::class, 'cetakJadwal'])

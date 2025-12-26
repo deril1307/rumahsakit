@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Artisan;
 use Barryvdh\DomPDF\Facade\Pdf; 
 use Carbon\Carbon;
 
+// === TAMBAHAN BARU: Import untuk Excel ===
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\LaporanExport;
+
 class AdminDashboardController extends Controller
 {
     /**
@@ -438,5 +442,25 @@ class AdminDashboardController extends Controller
 
         // 5. Stream PDF ke Browser
         return $pdf->stream('Laporan-Jadwal-Admin.pdf');
+    }
+
+    /**
+     * EKSPOR KE EXCEL (METHOD TAMBAHAN BARU)
+     * Menghubungkan ke file App\Exports\LaporanExport
+     */
+    public function exportExcel(Request $request)
+    {
+        // 1. Ambil Filter dari URL (Sama seperti PDF/Index)
+        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
+        
+        // 2. Download Excel
+        // Parameter: (Class Exportnya, Nama File Download)
+        return Excel::download(new LaporanExport(
+            $startDate, 
+            $endDate, 
+            $request->terapis_id, 
+            $request->jenis_terapi
+        ), 'Laporan-Jadwal-RS.xlsx');
     }
 }
