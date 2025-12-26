@@ -32,25 +32,51 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
 
-                        {{-- HEADER: Judul, Form Pencarian & Tombol Tambah --}}
+                        {{-- HEADER: Judul, Form Filter & Pencarian & Tombol Tambah --}}
                         <div class="flex flex-col lg:flex-row gap-4 mb-6 items-center justify-between">
 
-                            {{-- GROUP KIRI (Judul + Search) --}}
+                            {{-- GROUP KIRI (Judul + Form Filter + Search) --}}
                             <div class="flex flex-col md:flex-row gap-4 w-full lg:w-auto flex-grow items-center">
 
                                 {{-- Judul --}}
-                                <h3 class="text-lg font-medium text-gray-900 whitespace-nowrap">
-                                    Daftar Jadwal Pasien
+                                <h3 class="text-lg font-medium text-gray-900 whitespace-nowrap hidden lg:block">
+                                    Daftar Jadwal
                                 </h3>
 
-                                {{-- FORM PENCARIAN --}}
+                                {{-- FORM PENCARIAN & FILTER --}}
                                 <form method="GET" action="{{ route('admin.jadwal.index') }}"
-                                    class="w-full flex flex-grow gap-2">
+                                    class="w-full flex flex-col sm:flex-row gap-2">
 
-                                    {{-- Wrapper Input --}}
+                                    {{-- 1. DROPDOWN FILTER WAKTU --}}
+                                    <select name="filter" onchange="this.form.submit()"
+                                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2 cursor-pointer">
+                                        <option value="terbaru" {{ request('filter') == 'terbaru' ? 'selected' : '' }}>
+                                            Urutkan: Terbaru
+                                        </option>
+                                        <option value="terlama" {{ request('filter') == 'terlama' ? 'selected' : '' }}>
+                                            Urutkan: Terlama
+                                        </option>
+                                        <option disabled>──────────</option>
+                                        <option value="hari_ini" {{ request('filter') == 'hari_ini' ? 'selected' : '' }}>
+                                            📅 Hari Ini
+                                        </option>
+                                        <option value="minggu_ini" {{ request('filter') == 'minggu_ini' ? 'selected' : '' }}>
+                                            📅 7 Hari Terakhir
+                                        </option>
+                                        <option value="bulan_ini" {{ request('filter') == 'bulan_ini' ? 'selected' : '' }}>
+                                            📅 Bulan Ini
+                                        </option>
+                                        <option value="bulan_lalu" {{ request('filter') == 'bulan_lalu' ? 'selected' : '' }}>
+                                            📅 Bulan Lalu
+                                        </option>
+                                        <option value="6_bulan" {{ request('filter') == '6_bulan' ? 'selected' : '' }}>
+                                            📅 6 Bulan Terakhir
+                                        </option>
+                                    </select>
+
+                                    {{-- 2. INPUT PENCARIAN --}}
                                     <div class="relative flex-grow w-full">
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
                                                 stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,7 +89,7 @@
 
                                         {{-- Tombol X (Hapus Pencarian) --}}
                                         @if (request('search'))
-                                            <a href="{{ route('admin.jadwal.index') }}"
+                                            <a href="{{ route('admin.jadwal.index', request()->except(['search', 'page'])) }}"
                                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500"
                                                 title="Hapus pencarian">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -90,11 +116,32 @@
                             </a>
                         </div>
 
-                        {{-- Info Hasil Pencarian --}}
-                        @if (request('search'))
-                            <div class="mb-4 text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
-                                Menampilkan jadwal untuk pasien dengan nama:
-                                <strong>"{{ request('search') }}"</strong>
+                        {{-- Info Hasil Filter --}}
+                        @if(request('search') || request('filter'))
+                            <div class="mb-4 text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 flex flex-wrap gap-2 items-center">
+                                <span class="font-bold">Filter aktif:</span>
+                                
+                                @if(request('filter'))
+                                    <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs">
+                                        @switch(request('filter'))
+                                            @case('terlama') Urutkan Terlama @break
+                                            @case('hari_ini') Hari Ini @break
+                                            @case('minggu_ini') 7 Hari Terakhir @break
+                                            @case('bulan_ini') Bulan Ini @break
+                                            @case('bulan_lalu') Bulan Lalu @break
+                                            @case('6_bulan') 6 Bulan Terakhir @break
+                                            @default Urutkan Terbaru
+                                        @endswitch
+                                    </span>
+                                @endif
+
+                                @if(request('search')) 
+                                    <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs">
+                                        Pencarian: "{{ request('search') }}"
+                                    </span> 
+                                @endif
+
+                                <a href="{{ route('admin.jadwal.index') }}" class="text-xs text-red-600 hover:underline ml-2">Reset Filter</a>
                             </div>
                         @endif
 
@@ -179,45 +226,31 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <div class="flex justify-center space-x-3">
+                                                <div class="flex justify-center space-x-2">
 
-                                                    {{-- TOMBOL EDIT --}}
+                                                    {{-- TOMBOL UBAH (Gray) --}}
                                                     <a href="{{ route('admin.jadwal.edit', $jadwal->id) }}"
-                                                        class="text-yellow-600 hover:text-yellow-900" title="Edit">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                            viewBox="0 0 24 24" stroke-width="1.5"
-                                                            stroke="currentColor" class="w-5 h-5">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                                        </svg>
+                                                        class="inline-flex items-center px-3 py-1.5 bg-gray-700 border border-transparent rounded text-xs font-bold text-white uppercase tracking-widest hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm"
+                                                        title="Edit Jadwal">
+                                                        UBAH
                                                     </a>
 
-                                                    {{-- TOMBOL CETAK PDF --}}
+                                                    {{-- TOMBOL CETAK (Indigo/Biru) --}}
                                                     <a href="{{ route('admin.jadwal.cetak', $jadwal->id) }}"
                                                         target="_blank"
-                                                        class="text-indigo-600 hover:text-indigo-900"
+                                                        class="inline-flex items-center px-3 py-1.5 bg-indigo-600 border border-transparent rounded text-xs font-bold text-white uppercase tracking-widest hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm"
                                                         title="Cetak PDF">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                            viewBox="0 0 24 24" stroke-width="1.5"
-                                                            stroke="currentColor" class="w-5 h-5">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
-                                                        </svg>
+                                                        CETAK
                                                     </a>
 
-                                                    {{-- TOMBOL HAPUS (DENGAN ALPINE JS) --}}
+                                                    {{-- TOMBOL HAPUS (Merah) --}}
                                                     <button type="button"
                                                         @click="showDeleteModal = true; 
                                                                 deleteUrl = '{{ route('admin.jadwal.destroy', $jadwal->id) }}'; 
                                                                 deleteName = '{{ $jadwal->pasien->nama ?? 'Tanpa Nama' }} ({{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }})'"
-                                                        class="text-red-600 hover:text-red-900" title="Hapus">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                            </path>
-                                                        </svg>
+                                                        class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded text-xs font-bold text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm"
+                                                        title="Hapus Jadwal">
+                                                        HAPUS
                                                     </button>
                                                 </div>
                                             </td>
@@ -226,9 +259,8 @@
                                         <tr>
                                             <td colspan="7"
                                                 class="px-6 py-12 whitespace-nowrap text-center text-sm text-gray-500">
-                                                @if (request('search'))
-                                                    Tidak ditemukan jadwal untuk pasien bernama
-                                                    "<strong>{{ request('search') }}</strong>"
+                                                @if (request('search') || request('filter'))
+                                                    Tidak ditemukan jadwal dengan filter/pencarian ini.
                                                 @else
                                                     Belum ada jadwal yang dibuat.
                                                 @endif

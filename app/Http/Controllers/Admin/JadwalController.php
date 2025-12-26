@@ -10,8 +10,7 @@ use App\Models\JenisTerapi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf; // Pastikan Library PDF di-import
-// TAMBAHAN: Import Facade Artisan agar bisa menjalankan perintah command
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Artisan;
 
 class JadwalController extends Controller
@@ -21,36 +20,61 @@ class JadwalController extends Controller
      */
     public function index(Request $request)
     {
-        // ============================================================
-        // === TAMBAHAN: AUTO BATALKAN JADWAL SAAT MEMBUKA HALAMAN INI ===
-        // ============================================================
-        // Sistem akan mengecek dan membatalkan jadwal yang telat (No Show)
-        // tepat sebelum daftar jadwal ditampilkan ke Admin.
+        // Auto batalkan jadwal telat
         Artisan::call('jadwal:auto-batal');
-        // ============================================================
 
-        // Ambil kata kunci pencarian
+        // Ambil input pencarian dan filter
         $search = $request->input('search');
+        $filter = $request->input('filter'); // Input baru dari dropdown
 
-        // Query Jadwal dengan Relasi
-        $jadwals = Jadwal::with(['pasien', 'terapis'])
-            // Logika Pencarian Nama Pasien
-            ->when($search, function ($query, $search) {
-                return $query->whereHas('pasien', function ($q) use ($search) {
-                    $q->where('nama', 'like', "%{$search}%");
-                });
-            })
-            ->orderBy('tanggal', 'desc')     // Urutkan tanggal terbaru
-            ->orderBy('jam_mulai', 'asc')    // Urutkan jam
-            ->paginate(10)                   // Gunakan Pagination (10 per halaman)
-            ->withQueryString();             // Agar pencarian tidak hilang saat klik halaman 2
+        // Query Dasar
+        $query = Jadwal::with(['pasien', 'terapis']);
+
+        // 1. Logika Pencarian Nama Pasien
+        if ($search) {
+            $query->whereHas('pasien', function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%");
+            });
+        }
+
+        // 2. Logika Filter Waktu
+        switch ($filter) {
+            case 'hari_ini':
+                $query->whereDate('tanggal', Carbon::today());
+                break;
+            case 'minggu_ini': // Seminggu ke belakang (Last 7 Days)
+                $query->whereBetween('tanggal', [Carbon::today()->subDays(7), Carbon::today()]);
+                break;
+            case 'bulan_ini': // Bulan ini (Current Month)
+                $query->whereMonth('tanggal', Carbon::now()->month)
+                      ->whereYear('tanggal', Carbon::now()->year);
+                break;
+            case 'bulan_lalu': // Bulan kemarin (Last Month)
+                 $query->whereMonth('tanggal', Carbon::now()->subMonth()->month)
+                       ->whereYear('tanggal', Carbon::now()->subMonth()->year);
+                break;
+            case '6_bulan': // 6 Bulan terakhir
+                $query->whereBetween('tanggal', [Carbon::today()->subMonths(6), Carbon::today()]);
+                break;
+            // Default tidak ada filter waktu khusus (menampilkan semua sejarah)
+        }
+
+        // 3. Logika Pengurutan (Sorting)
+        if ($filter == 'terlama') {
+            $query->orderBy('tanggal', 'asc')->orderBy('jam_mulai', 'asc');
+        } else {
+            // Default: Terbaru
+            $query->orderBy('tanggal', 'desc')->orderBy('jam_mulai', 'asc');
+        }
+
+        // Eksekusi Pagination
+        $jadwals = $query->paginate(10)->withQueryString();
 
         return view('admin.jadwal.index', compact('jadwals'));
     }
 
-    /**
-     * Menampilkan form tambah jadwal
-     */
+    // ... (Method create, store, edit, update, destroy, cetak TETAP SAMA seperti sebelumnya)
+    
     public function create()
     {
         $pasiens = Pasien::all();
@@ -60,9 +84,6 @@ class JadwalController extends Controller
         return view('admin.jadwal.create', compact('pasiens', 'terapis', 'jenisTerapis'));
     }
 
-    /**
-     * Menyimpan jadwal baru
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -86,7 +107,6 @@ class JadwalController extends Controller
 
             for ($i = 0; $i < $loops; $i++) {
                 
-                // Cek Bentrok
                 $bentrok = Jadwal::where('user_id', $request->user_id)
                     ->where('tanggal', $tanggal->format('Y-m-d'))
                     ->where(function ($query) use ($jamMulai, $jamSelesai) {
@@ -127,9 +147,6 @@ class JadwalController extends Controller
         }
     }
 
-    /**
-     * Menampilkan form edit jadwal
-     */
     public function edit($id)
     {
         $jadwal = Jadwal::findOrFail($id);
@@ -140,9 +157,6 @@ class JadwalController extends Controller
         return view('admin.jadwal.edit', compact('jadwal', 'pasiens', 'terapis', 'jenisTerapis'));
     }
 
-    /**
-     * Update jadwal yang sudah ada
-     */
     public function update(Request $request, $id)
     {
         $jadwal = Jadwal::findOrFail($id);
@@ -155,13 +169,12 @@ class JadwalController extends Controller
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
             'ruangan' => 'nullable|string',
-            'status' => 'required|in:terjadwal,selesai,batal,pending', // Tambahan validasi status
+            'status' => 'required|in:terjadwal,selesai,batal,pending',
         ]);
 
-        // Cek Bentrok (Kecuali jadwal ini sendiri)
         $bentrok = Jadwal::where('user_id', $request->user_id)
             ->where('tanggal', $request->tanggal)
-            ->where('id', '!=', $id) // PENTING: Jangan cek jadwal diri sendiri
+            ->where('id', '!=', $id)
             ->where(function ($query) use ($request) {
                 $query->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
                       ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai])
@@ -190,9 +203,6 @@ class JadwalController extends Controller
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus jadwal
-     */
     public function destroy($id)
     {
         $jadwal = Jadwal::findOrFail($id);
@@ -201,23 +211,11 @@ class JadwalController extends Controller
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
     }
 
-    /**
-     * Method Baru: Cetak PDF Tiket Jadwal
-     * Ini akan mencetak data jadwal yang spesifik berdasarkan ID-nya.
-     * ID yang digunakan adalah ID unik dari database, bukan nomor urut tabel.
-     */
     public function cetak($id)
     {
-        // Cari jadwal berdasarkan ID, jika tidak ketemu tampilkan 404
         $jadwal = Jadwal::with(['pasien', 'terapis'])->findOrFail($id);
-
-        // Load view PDF (pastikan file resources/views/admin/jadwal/pdf.blade.php ada)
         $pdf = Pdf::loadView('admin.jadwal.pdf', compact('jadwal'));
-        
-        // Atur ukuran kertas struk/tiket (A5 Landscape agar hemat kertas dan pas jadi tiket)
         $pdf->setPaper('a5', 'landscape');
-
-        // Tampilkan di browser dengan nama file yang relevan
         return $pdf->stream('Tiket-Jadwal-' . $jadwal->pasien->no_rm . '.pdf');
     }
 }

@@ -210,27 +210,27 @@
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                No</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                Nama</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                NIP</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                Spesialisasi</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                No. Telp</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                Status</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                                Aksi</th>
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                No
+                                            </th>
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                Nama
+                                            </th>
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                NIP
+                                            </th>
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                Spesialisasi
+                                            </th>
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                No. Telp
+                                            </th>
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                Status
+                                            </th>
+                                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                                Aksi
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -240,22 +240,25 @@
                                                     {{ $terapisList->firstItem() + $loop->index }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {{ $terapis->name }}</td>
+                                                    {{ $terapis->name }}
+                                                </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {{ $terapis->nip ?? '-' }}</td>
+                                                    {{ $terapis->nip ?? '-' }}
+                                                </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {{ $terapis->spesialisasi ?? '-' }}</td>
+                                                    {{ $terapis->spesialisasi ?? '-' }}
+                                                </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {{ $terapis->no_telp ?? '-' }}</td>
+                                                    {{ $terapis->no_telp ?? '-' }}
+                                                </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <span
-                                                        class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $terapis->status == 'Aktif' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200' }} border">
+                                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $terapis->status == 'Aktif' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200' }} border">
                                                         {{ $terapis->status }}
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div class="flex space-x-3">
-                                                        {{-- Tombol Edit --}}
+                                                    <div class="flex space-x-2">
+                                                        {{-- Tombol UBAH (Tampilan Kotak Gelap) --}}
                                                         <button @click="openEditModal('{{ route('admin.terapis.update', $terapis->id) }}', {
                                                                         name: '{{ addslashes($terapis->name) }}',
                                                                         nip: '{{ $terapis->nip }}',
@@ -263,24 +266,15 @@
                                                                         no_telp: '{{ $terapis->no_telp }}',
                                                                         email: '{{ $terapis->email }}',
                                                                         status: '{{ $terapis->status }}'
-                                                                    })" class="text-yellow-600 hover:text-yellow-900 transition-colors"
-                                                            title="Edit">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                            </svg>
+                                                                    })" 
+                                                            class="inline-flex items-center px-3 py-1.5 bg-gray-700 border border-transparent rounded text-xs font-bold text-white uppercase tracking-widest hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                                                            UBAH
                                                         </button>
 
-                                                        {{-- Tombol Hapus --}}
-                                                        <button
-                                                            @click="openDeleteModal('{{ route('admin.terapis.destroy', $terapis->id) }}', '{{ addslashes($terapis->name) }}')"
-                                                            class="text-red-600 hover:text-red-900 transition-colors" title="Hapus">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                            </svg>
+                                                        {{-- Tombol HAPUS (Tampilan Kotak Merah) --}}
+                                                        <button @click="openDeleteModal('{{ route('admin.terapis.destroy', $terapis->id) }}', '{{ addslashes($terapis->name) }}')"
+                                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded text-xs font-bold text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                                                            HAPUS
                                                         </button>
                                                     </div>
                                                 </td>
@@ -305,8 +299,7 @@
         <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                <div
-                    class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
 
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div class="flex justify-between items-center mb-4">
@@ -397,12 +390,10 @@
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showDeleteModal = false">
             </div>
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                <div
-                    class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+                <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
-                            <div
-                                class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                                 <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round"
