@@ -467,9 +467,6 @@
             </div>
         </div>
 
-        {{-- ========================================== --}}
-        {{-- ======== MODAL KONFIRMASI HAPUS ========== --}}
-        {{-- ========================================== --}}
         <div x-show="showDeleteModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showDeleteModal = false">
             </div>
@@ -514,7 +511,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     {{-- CSS untuk x-cloak (mencegah flash of unstyled content) --}}
