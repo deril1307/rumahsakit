@@ -5,10 +5,11 @@
         </h2>
     </x-slot>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <!-- CARD: DAFTAR JADWAL -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
@@ -17,7 +18,6 @@
                             Jadwal Terapi: <span class="text-indigo-600">{{ $labelFilter }}</span>
                         </h3>
 
-                        <!-- FORM FILTER JADWAL -->
                         <form method="GET" action="{{ route('terapis.dashboard') }}" class="flex items-center">
                             <label for="filter" class="mr-2 text-sm text-gray-600 font-semibold">Tampilkan:</label>
                             <select name="filter" id="filter" onchange="this.form.submit()"
@@ -33,7 +33,6 @@
                         </form>
                     </div>
 
-                    <!-- TABEL JADWAL -->
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 border">
                             <thead class="bg-gray-50">
@@ -68,19 +67,17 @@
                                 @forelse ($jadwalList as $jadwal)
                                     <tr class="hover:bg-gray-50 transition">
 
-                                        <!-- Tanggal & Jam -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-2 whitespace-nowrap">
                                             <div class="text-sm font-bold text-indigo-700">
                                                 {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                                             </div>
-                                            <div class="text-sm text-gray-500">
+                                            <div class="text-xs text-gray-500">
                                                 {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} -
                                                 {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}
                                             </div>
                                         </td>
 
-                                        <!-- Pasien -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-2 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ $jadwal->pasien->nama ?? 'Nama Pasien' }}
                                             </div>
@@ -89,99 +86,80 @@
                                             </div>
                                         </td>
 
-                                        <!-- Jenis Terapi -->
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <td class="px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $jadwal->jenis_terapi }}
                                         </td>
 
-                                        <!-- Ruangan -->
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500">
                                             {{ $jadwal->ruangan ?? '-' }}
                                         </td>
 
-                                        <!-- Status -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-2 whitespace-nowrap">
                                             @if ($jadwal->status == 'terjadwal')
                                                 <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                                                     Terjadwal
                                                 </span>
                                             @elseif($jadwal->status == 'selesai')
                                                 <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">
+                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">
                                                     Selesai
                                                 </span>
                                             @elseif($jadwal->status == 'batal')
                                                 <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">
+                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">
                                                     Batal
                                                 </span>
                                             @elseif($jadwal->status == 'pending')
                                                 <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
-                                                    Pending/Ditunda
+                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                                                    Pending
                                                 </span>
                                             @endif
                                         </td>
 
-                                        <!-- Aksi -->
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-
-                                            <div class="flex space-x-2 items-center">
-
-                                                {{-- Tombol Edit (Untuk Koreksi) --}}
+                                        <td class="px-6 py-2 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex items-center space-x-1">
+                                                
+                                                {{-- Tombol Edit --}}
                                                 <a href="{{ route('terapis.jadwal.edit', $jadwal->id) }}"
-                                                    class="text-yellow-600 hover:text-yellow-900"
-                                                    title="Edit Status / Koreksi">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                                        class="w-5 h-5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                                    </svg>
+                                                    class="inline-flex items-center px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-bold rounded shadow transition uppercase"
+                                                    title="Ubah Jadwal">
+                                                    Ubah
                                                 </a>
 
-                                                {{-- Tombol Aksi Cepat (Hanya jika belum selesai/batal) --}}
                                                 @if ($jadwal->status == 'terjadwal' || $jadwal->status == 'pending')
-                                                    <!-- Tombol Selesai -->
-                                                    <form
-                                                        action="{{ route('terapis.jadwal.updateStatus', $jadwal->id) }}"
-                                                        method="POST">
+                                                    
+                                                    <form action="{{ route('terapis.jadwal.updateStatus', $jadwal->id) }}" method="POST">
                                                         @csrf
                                                         @method('PATCH')
                                                         <input type="hidden" name="status" value="selesai">
                                                         <button type="submit"
-                                                            class="text-green-600 hover:text-green-900 font-bold"
-                                                            onclick="return confirm('Tandai sesi ini sebagai SELESAI?')">
-                                                            ✅
+                                                            class="inline-flex items-center px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded shadow transition uppercase"
+                                                            onclick="confirmAction(event, 'selesai')">
+                                                            Selesai
                                                         </button>
                                                     </form>
 
-                                                    <!-- Tombol Pending/Tunda -->
-                                                    <form
-                                                        action="{{ route('terapis.jadwal.updateStatus', $jadwal->id) }}"
-                                                        method="POST">
+                                                    <form action="{{ route('terapis.jadwal.updateStatus', $jadwal->id) }}" method="POST">
                                                         @csrf
                                                         @method('PATCH')
                                                         <input type="hidden" name="status" value="pending">
                                                         <button type="submit"
-                                                            class="text-orange-600 hover:text-orange-900 font-bold"
-                                                            onclick="return confirm('Tandai sesi ini sebagai PENDING/DITUNDA?')">
-                                                            ⏳
+                                                            class="inline-flex items-center px-2 py-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded shadow transition uppercase"
+                                                            onclick="confirmAction(event, 'tunda')">
+                                                            Tunda
                                                         </button>
                                                     </form>
 
-                                                    <!-- Tombol Batal -->
-                                                    <form
-                                                        action="{{ route('terapis.jadwal.updateStatus', $jadwal->id) }}"
-                                                        method="POST">
+                                                    <form action="{{ route('terapis.jadwal.updateStatus', $jadwal->id) }}" method="POST">
                                                         @csrf
                                                         @method('PATCH')
                                                         <input type="hidden" name="status" value="batal">
                                                         <button type="submit"
-                                                            class="text-red-600 hover:text-red-900 font-bold"
-                                                            onclick="return confirm('Batalkan sesi ini?')">
-                                                            ❌
+                                                            class="inline-flex items-center px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded shadow transition uppercase"
+                                                            onclick="confirmAction(event, 'batal')">
+                                                            Batal
                                                         </button>
                                                     </form>
                                                 @endif
@@ -189,7 +167,6 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <!-- Jika Tidak Ada Jadwal -->
                                     <tr>
                                         <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                                             <div class="flex flex-col items-center justify-center">
@@ -212,4 +189,58 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function confirmAction(event, type) {
+            // Mencegah form langsung terkirim
+            event.preventDefault();
+            
+            // Mencari form terdekat dari tombol yang diklik
+            const form = event.target.closest('form');
+
+            // Konfigurasi pesan berdasarkan tombol yang ditekan
+            let titleText = '';
+            let bodyText = '';
+            let confirmBtnText = '';
+            let confirmBtnColor = '';
+            let iconType = '';
+
+            if (type === 'selesai') {
+                titleText = 'Konfirmasi Selesai?';
+                bodyText = 'Pastikan terapi sudah benar-benar selesai dilakukan.';
+                confirmBtnText = 'Ya, Selesai!';
+                confirmBtnColor = '#16a34a'; // Hijau (Tailwind green-600)
+                iconType = 'success';
+            } else if (type === 'tunda') {
+                titleText = 'Tunda Jadwal?';
+                bodyText = 'Pasien akan masuk status Pending/Tunda.';
+                confirmBtnText = 'Ya, Tunda';
+                confirmBtnColor = '#f97316'; // Orange (Tailwind orange-500)
+                iconType = 'warning';
+            } else if (type === 'batal') {
+                titleText = 'Batalkan Sesi?';
+                bodyText = 'Tindakan ini tidak bisa dibatalkan jika sudah disimpan.';
+                confirmBtnText = 'Ya, Batalkan';
+                confirmBtnColor = '#dc2626'; // Merah (Tailwind red-600)
+                iconType = 'error';
+            }
+
+            // Memunculkan Popup SweetAlert
+            Swal.fire({
+                title: titleText,
+                text: bodyText,
+                icon: iconType,
+                showCancelButton: true,
+                confirmButtonColor: confirmBtnColor,
+                cancelButtonColor: '#6b7280', // Abu-abu
+                confirmButtonText: confirmBtnText,
+                cancelButtonText: 'Kembali / Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika user klik tombol YA, baru submit form
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>
