@@ -62,21 +62,21 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach ($users as $index => $user)
                                         <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {{ $index + 1 }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {{ $user->name }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {{ $user->email }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {{ ucfirst($user->roles->pluck('name')->join(', ')) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 @if ($user->hasRole('admin'))
-                                                    <span class="text-gray-400 text-xs italic">Admin Utama</span>
+                                                    <span class="text-gray-400 text-xs italic">Admin (Tidak bisa diubah)</span>
                                                 @else
                                                     <div class="flex space-x-2">
                                                         {{-- Tombol UBAH (Gaya seperti di gambar: Gelap) --}}
