@@ -6,13 +6,17 @@
         </h2>
     </x-slot>
 
+    {{-- 1. LOAD SWEETALERT2 --}}
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+
+    {{-- 
+        LOGIKA ALPINE.JS (Hanya untuk Modal Tambah & Edit)
+        Logika hapus dihapus dari sini dan diganti SweetAlert
+    --}}
     <div x-data="{
         showModal: {{ $errors->any() ? 'true' : 'false' }},
-        showDeleteModal: false,
         isEdit: false,
         formAction: '{{ route('admin.pasien.store') }}',
-        deleteUrl: '',
-        deleteName: '',
         form: {
             id: '',
             nama: '',
@@ -46,12 +50,6 @@
             this.formAction = url;
             this.form = data;
             this.showModal = true;
-        },
-    
-        openDeleteModal(url, name) {
-            this.deleteUrl = url;
-            this.deleteName = name;
-            this.showDeleteModal = true;
         }
     }">
 
@@ -60,33 +58,15 @@
 
                 {{-- Notifikasi Success --}}
                 @if (session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-                        role="alert">
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                         <span class="block sm:inline">{{ session('success') }}</span>
-                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3"
-                            onclick="this.parentElement.style.display='none';">
-                            <svg class="fill-current h-6 w-6 text-green-500" role="button"
-                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path
-                                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                            </svg>
-                        </button>
                     </div>
                 @endif
 
                 {{-- Notifikasi Updated --}}
                 @if (session('updated'))
-                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4"
-                        role="alert">
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" role="alert">
                         <span class="block sm:inline">{{ session('updated') }}</span>
-                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3"
-                            onclick="this.parentElement.style.display='none';">
-                            <svg class="fill-current h-6 w-6 text-blue-500" role="button" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20">
-                                <path
-                                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                            </svg>
-                        </button>
                     </div>
                 @endif
 
@@ -94,14 +74,6 @@
                 @if (session('deleted'))
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                         <span class="block sm:inline">{{ session('deleted') }}</span>
-                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3"
-                            onclick="this.parentElement.style.display='none';">
-                            <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20">
-                                <path
-                                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                            </svg>
-                        </button>
                     </div>
                 @endif
 
@@ -109,14 +81,6 @@
                 @if (session('error'))
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                         <span class="block sm:inline">{{ session('error') }}</span>
-                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3"
-                            onclick="this.parentElement.style.display='none';">
-                            <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20">
-                                <path
-                                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                            </svg>
-                        </button>
                     </div>
                 @endif
 
@@ -153,12 +117,10 @@
                             {{-- Form Search + Filter Status --}}
                             <form method="GET" action="{{ route('admin.pasien.index') }}" class="flex flex-wrap gap-2 w-full sm:w-auto flex-grow">
                                 
-                                {{-- Input Hidden untuk menjaga filter Abjad saat menekan tombol cari --}}
                                 @if(request('alpha'))
                                     <input type="hidden" name="alpha" value="{{ request('alpha') }}">
                                 @endif
 
-                                {{-- Dropdown Status --}}
                                 <select name="status" 
                                         class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2"
                                         onchange="this.form.submit()">
@@ -167,7 +129,6 @@
                                     <option value="Nonaktif" {{ request('status') == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                                 </select>
 
-                                {{-- Input Text Pencarian --}}
                                 <div class="relative flex-grow min-w-[200px]">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +139,6 @@
                                         class="w-full pl-10 pr-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2"
                                         placeholder="Cari Nama / No. RM / No. Telp..." />
                                     
-                                    {{-- Tombol X (Clear Search) --}}
                                     @if (request('search'))
                                         <a href="{{ route('admin.pasien.index', request()->except(['search', 'page'])) }}"
                                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500"
@@ -190,7 +150,6 @@
                                     @endif
                                 </div>
 
-                                {{-- Tombol CARI (ENTER) --}}
                                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Cari
                                 </button>
@@ -303,7 +262,7 @@
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     <div class="flex space-x-2">
-                                                        {{-- Tombol UBAH (Tampilan Kotak Gelap) --}}
+                                                        {{-- Tombol UBAH --}}
                                                         <button @click="openEditModal('{{ route('admin.pasien.update', $pasien->id) }}', {
                                                                         id: '{{ $pasien->id }}',
                                                                         nama: '{{ $pasien->nama }}',
@@ -319,12 +278,17 @@
                                                             UBAH
                                                         </button>
 
-                                                        {{-- Tombol HAPUS (Tampilan Kotak Merah) --}}
-                                                        <button
-                                                            @click="openDeleteModal('{{ route('admin.pasien.destroy', $pasien->id) }}', '{{ $pasien->nama }}')"
-                                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded text-xs font-bold text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
-                                                            HAPUS
-                                                        </button>
+                                                        {{-- Tombol HAPUS (DENGAN SWEETALERT) --}}
+                                                        <form action="{{ route('admin.pasien.destroy', $pasien->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            
+                                                            <button type="submit"
+                                                                onclick="confirmDelete(event, '{{ $pasien->nama }}')"
+                                                                class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded text-xs font-bold text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                                                                HAPUS
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -347,6 +311,7 @@
         {{-- ========================================== --}}
         {{-- ========= MODAL FORM (ADD/EDIT) ========== --}}
         {{-- ========================================== --}}
+        {{-- Modal ini tetap pakai Alpine.js karena butuh binding data form --}}
         <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
@@ -457,53 +422,37 @@
             </div>
         </div>
 
-        <div x-show="showDeleteModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showDeleteModal = false">
-            </div>
-            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                <div
-                    class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
-                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div
-                                class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                </svg>
-                            </div>
-                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                <h3 class="text-lg font-semibold leading-6 text-gray-900">Konfirmasi Hapus Pasien</h3>
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-500">
-                                        Apakah Anda yakin ingin menghapus data pasien <strong
-                                            x-text="deleteName"></strong>? Tindakan ini tidak dapat dibatalkan.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                        <form method="POST" :action="deleteUrl">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition duration-150">
-                                Hapus
-                            </button>
-                        </form>
-                        <button type="button" @click="showDeleteModal = false"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition duration-150">
-                            Batal
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{-- Modal Hapus LAMA (Alpine) SUDAH DIHAPUS --}}
+
     </div>
 
-    {{-- CSS untuk x-cloak (mencegah flash of unstyled content) --}}
+    {{-- SCRIPT SWEETALERT (Sama persis dengan User & Terapis) --}}
+    <script>
+        function confirmDelete(event, name) {
+            // Mencegah form langsung terkirim
+            event.preventDefault();
+            
+            // Mencari form terdekat dari tombol yang diklik
+            const form = event.target.closest('form');
+
+            // Memunculkan Popup SweetAlert
+            Swal.fire({
+                title: 'Hapus Pasien?',
+                text: "Apakah Anda yakin ingin menghapus data pasien " + name + "? Tindakan ini tidak dapat dibatalkan.",
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626', // Merah
+                cancelButtonColor: '#6b7280',  // Abu-abu
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Kembali / Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    </script>
+
     <style>
         [x-cloak] {
             display: none !important;
