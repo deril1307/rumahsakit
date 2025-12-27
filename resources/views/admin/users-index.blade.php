@@ -4,8 +4,6 @@
             {{ __('Manajemen User') }}
         </h2>
     </x-slot>
-
-    {{-- LOGIKA ALPINE.JS UNTUK MODAL HAPUS --}}
     <div x-data="{ 
         showDeleteModal: false,
         deleteUrl: '',
@@ -160,5 +158,4 @@
             display: none !important;
         }
     </style>
-
 </x-app-layout>
