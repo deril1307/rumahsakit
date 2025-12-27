@@ -87,9 +87,25 @@ class TerapisDashboardController extends Controller
         return view('terapis.edit', compact('jadwal'));
     }
 
-    /**
-     * Update Status Terapi (Tombol Selesai/Batal/Ditunda)
-     */
+    // public function updateStatus(Request $request, $id)
+    // {
+    //     // Pastikan jadwal yang diupdate adalah milik terapis yang login
+    //     $jadwal = Jadwal::where('user_id', Auth::id())->findOrFail($id);
+
+    //     $request->validate([
+    //         // Tambahkan 'ditunda' ke dalam validasi status
+    //         'status' => 'required|in:terjadwal,selesai,batal,pending,ditunda',
+    //         'catatan' => 'nullable|string'
+    //     ]);
+
+    //     $jadwal->update([
+    //         'status' => $request->status,
+    //         'catatan' => $request->catatan // Opsi jika nanti mau nambah catatan medis
+    //     ]);
+
+    //     return redirect()->back()->with('success', 'Status terapi berhasil diperbarui.');
+    // }
+
     public function updateStatus(Request $request, $id)
     {
         // Pastikan jadwal yang diupdate adalah milik terapis yang login
@@ -103,9 +119,11 @@ class TerapisDashboardController extends Controller
 
         $jadwal->update([
             'status' => $request->status,
-            'catatan' => $request->catatan // Opsi jika nanti mau nambah catatan medis
+            'catatan' => $request->catatan 
         ]);
 
-        return redirect()->back()->with('success', 'Status terapi berhasil diperbarui.');
+        // --- PERUBAHAN ADA DI SINI ---
+        // Ganti redirect()->back() menjadi redirect()->route('terapis.dashboard')
+        return redirect()->route('terapis.dashboard')->with('success', 'Status terapi berhasil diperbarui.');
     }
 }
