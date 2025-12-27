@@ -8,7 +8,6 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-            <!-- Link Kembali -->
             <a href="{{ route('admin.jadwal.index') }}"
                 class="inline-flex items-center mb-4 text-sm text-gray-600 hover:text-gray-900">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -23,7 +22,6 @@
 
                     <h3 class="text-lg font-medium text-gray-900 mb-6">Edit Data Jadwal</h3>
 
-                    <!-- Validasi Error -->
                     @if ($errors->any())
                         <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4">
                             <ul class="list-disc pl-5 text-sm text-red-700">
@@ -36,11 +34,8 @@
 
                     <form action="{{ route('admin.jadwal.update', $jadwal->id) }}" method="POST">
                         @csrf
-                        @method('PUT') <!-- Method PUT wajib untuk update -->
+                        @method('PUT') <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                            <!-- 1. Pasien -->
                             <div class="col-span-2">
                                 <x-input-label for="pasien_id" :value="__('Pasien')" />
                                 <select id="pasien_id" name="pasien_id"
@@ -55,8 +50,6 @@
                                 <x-input-error :messages="$errors->get('pasien_id')" class="mt-2" />
                             </div>
 
-                            <!-- 2. Terapis (DIPINDAH KE ATAS) -->
-                            <!-- Script akan membaca data-spesialisasi dari sini -->
                             <div>
                                 <x-input-label for="user_id" :value="__('Terapis')" />
                                 <select id="user_id" name="user_id"
@@ -71,7 +64,6 @@
                                 <x-input-error :messages="$errors->get('user_id')" class="mt-2" />
                             </div>
 
-                            <!-- 3. Jenis Terapi (Otomatis & Readonly) -->
                             <div>
                                 <x-input-label for="jenis_terapi" :value="__('Jenis Terapi (Otomatis)')" />
                                 <select id="jenis_terapi" name="jenis_terapi"
@@ -87,7 +79,6 @@
                                 <x-input-error :messages="$errors->get('jenis_terapi')" class="mt-2" />
                             </div>
 
-                            <!-- 4. Tanggal -->
                             <div class="col-span-2 md:col-span-1">
                                 <x-input-label for="tanggal" :value="__('Tanggal')" />
                                 <x-text-input id="tanggal" class="block mt-1 w-full" type="date" name="tanggal"
@@ -98,7 +89,6 @@
                                 <x-input-error :messages="$errors->get('tanggal')" class="mt-2" />
                             </div>
 
-                            <!-- 5. Ruangan -->
                             <div class="col-span-2 md:col-span-1">
                                 <x-input-label for="ruangan" :value="__('Ruangan')" />
                                 <x-text-input id="ruangan" class="block mt-1 w-full" type="text" name="ruangan"
@@ -106,7 +96,6 @@
                                 <x-input-error :messages="$errors->get('ruangan')" class="mt-2" />
                             </div>
 
-                            <!-- 6. Jam Mulai -->
                             <div>
                                 <x-input-label for="jam_mulai" :value="__('Jam Mulai')" />
                                 <x-text-input id="jam_mulai" class="block mt-1 w-full" type="time" name="jam_mulai"
@@ -117,7 +106,6 @@
                                 <x-input-error :messages="$errors->get('jam_mulai')" class="mt-2" />
                             </div>
 
-                            <!-- 7. Jam Selesai -->
                             <div>
                                 <x-input-label for="jam_selesai" :value="__('Jam Selesai')" />
                                 <x-text-input id="jam_selesai" class="block mt-1 w-full" type="time"
@@ -128,8 +116,7 @@
                                 <x-input-error :messages="$errors->get('jam_selesai')" class="mt-2" />
                             </div>
 
-                            <!-- 8. Status Terapi -->
-                            <div class="col-span-2 bg-yellow-50 p-4 rounded-md border border-yellow-200">
+                            <div class="col-span-2">
                                 <x-input-label for="status" :value="__('Status Terapi')" />
                                 <select id="status" name="status"
                                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
