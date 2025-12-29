@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Artisan;
+// PENTING: Import Kedua Class Notifikasi
+use App\Notifications\JadwalBaruNotification;
+use App\Notifications\JadwalUpdateNotification;
 
 class JadwalController extends Controller
 {
@@ -73,8 +76,6 @@ class JadwalController extends Controller
         return view('admin.jadwal.index', compact('jadwals'));
     }
 
-    // ... (Method create, store, edit, update, destroy, cetak TETAP SAMA seperti sebelumnya)
-    
     public function create()
     {
         $pasiens = Pasien::all();
@@ -124,7 +125,7 @@ class JadwalController extends Controller
                     return back()->withErrors(['error' => "Jadwal bentrok untuk terapis tersebut pada tanggal " . $tanggal->format('d-m-Y')]);
                 }
 
-                Jadwal::create([
+                $jadwalBaru = Jadwal::create([
                     'pasien_id' => $request->pasien_id,
                     'user_id' => $request->user_id,
                     'jenis_terapi' => $request->jenis_terapi,
@@ -134,6 +135,14 @@ class JadwalController extends Controller
                     'ruangan' => $request->ruangan,
                     'status' => 'terjadwal',
                 ]);
+
+                // === NOTIFIKASI JADWAL BARU ===
+                // Notifikasi ini akan membawa data ID jadwal agar bisa diredirect
+                $terapis = User::find($request->user_id);
+                if ($terapis) {
+                    $terapis->notify(new JadwalBaruNotification($jadwalBaru));
+                }
+                // ==============================
 
                 $tanggal->addWeek();
             }
@@ -199,6 +208,14 @@ class JadwalController extends Controller
             'ruangan' => $request->ruangan,
             'status' => $request->status,
         ]);
+
+        // === NOTIFIKASI UPDATE JADWAL ===
+        // Notifikasi ini akan membawa data ID jadwal agar bisa diredirect ke detailnya
+        $terapis = User::find($request->user_id);
+        if ($terapis) {
+            $terapis->notify(new JadwalUpdateNotification($jadwal));
+        }
+        // ================================
 
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
     }

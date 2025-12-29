@@ -151,4 +151,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// ============================================
+// ========== ROUTES NOTIFIKASI (BARU) ========
+// ============================================
+// Route ini bisa diakses oleh Admin, Terapis, dll (selama login)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/notifikasi/{id}/baca', function ($id) {
+        $notif = auth()->user()->notifications()->find($id);
+        if ($notif) {
+            $notif->markAsRead(); // Tandai sudah dibaca
+            return redirect($notif->data['url'] ?? route('dashboard')); // Redirect ke halaman detail
+        }
+        return back();
+    })->name('notifikasi.baca');
+});
+
 require __DIR__.'/auth.php';

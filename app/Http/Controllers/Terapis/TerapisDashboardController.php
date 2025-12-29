@@ -4,9 +4,15 @@ namespace App\Http\Controllers\Terapis;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
+// PENTING: Tambahkan ini untuk mencari Admin
+use App\Models\User; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+// PENTING: Tambahkan ini untuk kirim notifikasi
+use Illuminate\Support\Facades\Notification; 
+// PENTING: Import notifikasi baru
+use App\Notifications\LaporanTerapisNotification; 
 
 class TerapisDashboardController extends Controller
 {
@@ -87,29 +93,12 @@ class TerapisDashboardController extends Controller
         return view('terapis.edit', compact('jadwal'));
     }
 
-    // public function updateStatus(Request $request, $id)
-    // {
-    //     // Pastikan jadwal yang diupdate adalah milik terapis yang login
-    //     $jadwal = Jadwal::where('user_id', Auth::id())->findOrFail($id);
-
-    //     $request->validate([
-    //         // Tambahkan 'ditunda' ke dalam validasi status
-    //         'status' => 'required|in:terjadwal,selesai,batal,pending,ditunda',
-    //         'catatan' => 'nullable|string'
-    //     ]);
-
-    //     $jadwal->update([
-    //         'status' => $request->status,
-    //         'catatan' => $request->catatan // Opsi jika nanti mau nambah catatan medis
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Status terapi berhasil diperbarui.');
-    // }
-
+    // Method ini diperbarui dengan fitur notifikasi
     public function updateStatus(Request $request, $id)
     {
         // Pastikan jadwal yang diupdate adalah milik terapis yang login
-        $jadwal = Jadwal::where('user_id', Auth::id())->findOrFail($id);
+        // Tambahkan with(['terapis', 'pasien']) agar data nama tersedia untuk pesan notifikasi
+        $jadwal = Jadwal::with(['terapis', 'pasien'])->where('user_id', Auth::id())->findOrFail($id);
 
         $request->validate([
             // Tambahkan 'ditunda' ke dalam validasi status
@@ -122,8 +111,17 @@ class TerapisDashboardController extends Controller
             'catatan' => $request->catatan 
         ]);
 
-        // --- PERUBAHAN ADA DI SINI ---
-        // Ganti redirect()->back() menjadi redirect()->route('terapis.dashboard')
+        // --- MULAI LOGIKA NOTIFIKASI KE ADMIN ---
+        // 1. Cari semua user dengan role 'admin'
+        $admins = User::role('admin')->get();
+
+        // 2. Kirim notifikasi ke semua admin yang ditemukan
+        if ($admins->count() > 0) {
+            // Pastikan Anda sudah membuat file App\Notifications\LaporanTerapisNotification
+            Notification::send($admins, new LaporanTerapisNotification($jadwal));
+        }
+        // --- SELESAI LOGIKA NOTIFIKASI KE ADMIN ---
+
         return redirect()->route('terapis.dashboard')->with('success', 'Status terapi berhasil diperbarui.');
     }
 }

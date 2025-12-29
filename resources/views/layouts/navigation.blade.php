@@ -22,7 +22,6 @@
                             {{ __('Dashboard') }}
                         </x-nav-link>
 
-                        <!-- JADWAL TERAPI -->
                         <x-nav-link :href="route('admin.jadwal.index')" :active="request()->routeIs('admin.jadwal.*')" class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -107,21 +106,6 @@
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <!-- Dropdown Notifikasi -->
-                @php
-                    $notifCount = 0;
-                    if (Auth::user()->hasRole('terapis')) {
-                        $notifCount = \App\Models\Jadwal::where('user_id', Auth::id())
-                            ->whereDate('tanggal', \Carbon\Carbon::today())
-                            ->where('status', 'terjadwal')
-                            ->count();
-                    } elseif (Auth::user()->hasRole('admin')) {
-                        $notifCount = \App\Models\Jadwal::whereDate('tanggal', \Carbon\Carbon::today())
-                            ->whereIn('status', ['terjadwal', 'pending'])
-                            ->count();
-                    }
-                @endphp
-
                 <x-dropdown align="right" width="60">
                     <x-slot name="trigger">
                         <div class="relative mr-4 cursor-pointer">
@@ -132,10 +116,10 @@
                                         d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                                 </svg>
 
-                                @if ($notifCount > 0)
+                                @if (Auth::user()->unreadNotifications->count() > 0)
                                     <span
                                         class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
-                                        {{ $notifCount }}
+                                        {{ Auth::user()->unreadNotifications->count() }}
                                     </span>
                                 @endif
                             </button>
@@ -143,45 +127,34 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <div class="w-60">
+                        <div class="w-60 max-h-80 overflow-y-auto">
                             <div class="px-4 py-2 border-b border-gray-100 font-semibold text-gray-700">
                                 Notifikasi
                             </div>
 
-                            @if ($notifCount > 0)
-                                <div class="px-4 py-3 text-sm text-gray-600">
-                                    @if (Auth::user()->hasRole('terapis'))
-                                        <p>Anda memiliki <span
-                                                class="font-bold text-indigo-600">{{ $notifCount }}</span> jadwal
-                                            terapi baru hari ini.</p>
-                                    @elseif(Auth::user()->hasRole('admin'))
-                                        <p>Ada <span class="font-bold text-indigo-600">{{ $notifCount }}</span>
-                                            jadwal pasien yang perlu dipantau hari ini.</p>
-                                    @else
-                                        <p>Ada pembaruan sistem.</p>
-                                    @endif
+                            @forelse (Auth::user()->unreadNotifications as $notification)
+                                <div class="px-4 py-3 text-sm text-gray-600 border-b border-gray-100 hover:bg-gray-50">
+                                    <a href="{{ route('notifikasi.baca', $notification->id) }}"
+                                        class="block w-full text-left">
+                                        <p class="font-bold text-indigo-600">
+                                            {{ $notification->data['title'] ?? 'Notifikasi' }}</p>
+                                        <p class="text-xs mt-1">
+                                            {{ \Illuminate\Support\Str::limit($notification->data['message'] ?? '', 60) }}
+                                        </p>
+                                        <p class="text-[10px] text-gray-400 mt-1">
+                                            {{ $notification->created_at->diffForHumans() }}</p>
+                                    </a>
                                 </div>
-                                <div class="border-t border-gray-100">
-                                    @if (Auth::user()->hasRole('terapis'))
-                                        <x-dropdown-link :href="route('terapis.dashboard')">
-                                            {{ __('Lihat Jadwal Saya') }}
-                                        </x-dropdown-link>
-                                    @elseif(Auth::user()->hasRole('admin'))
-                                        <x-dropdown-link :href="route('admin.dashboard')">
-                                            {{ __('Lihat Dashboard') }}
-                                        </x-dropdown-link>
-                                    @endif
-                                </div>
-                            @else
+                            @empty
                                 <div class="px-4 py-6 text-center text-sm text-gray-500">
                                     <svg class="mx-auto h-8 w-8 text-gray-300 mb-2" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                     </svg>
-                                    Tidak ada pembaruan saat ini.
+                                    Tidak ada notifikasi baru.
                                 </div>
-                            @endif
+                            @endforelse
                         </div>
                     </x-slot>
                 </x-dropdown>
@@ -262,7 +235,6 @@
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
 
-                <!-- JADWAL TERAPI (MOBILE) -->
                 <x-responsive-nav-link :href="route('admin.jadwal.index')" :active="request()->routeIs('admin.jadwal.*')">
                     {{ __('Jadwal') }}
                 </x-responsive-nav-link>
