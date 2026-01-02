@@ -5,7 +5,7 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Silakan perbarui nama profil dan alamat email Anda di sini.") }}
+            {{ __("Silakan perbarui nama profil, nomor telepon, dan alamat email Anda di sini.") }}
         </p>
     </header>
 
@@ -23,6 +23,29 @@
                 required autofocus autocomplete="name" placeholder="Masukkan nama lengkap Anda" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
+
+        <div>
+            <x-input-label for="no_telp" :value="__('Nomor Telepon / WhatsApp')" />
+            <x-text-input id="no_telp" name="no_telp" type="text" class="mt-1 block w-full" 
+                :value="old('no_telp', $user->no_telp)" 
+                placeholder="Contoh: 081234567890" />
+            <x-input-error class="mt-2" :messages="$errors->get('no_telp')" />
+        </div>
+
+        @if(!empty($user->spesialisasi))
+        <div>
+            <x-input-label for="spesialisasi" :value="__('Spesialisasi (Tidak dapat diubah)')" />
+            <x-text-input id="spesialisasi" name="spesialisasi" type="text" 
+                class="mt-1 block w-full bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200" 
+                :value="$user->spesialisasi" 
+                readonly 
+                disabled 
+            />
+            <p class="text-xs text-gray-500 mt-1">
+                *Hubungi admin jika ingin mengubah spesialisasi.
+            </p>
+        </div>
+        @endif
 
         <div>
             <x-input-label for="email" :value="__('Alamat Email')" />

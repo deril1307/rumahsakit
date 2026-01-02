@@ -11,7 +11,7 @@
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 
-                    {{-- === MENU ADMIN (5 LINK) === --}}
+    
                     @if (Auth::user()->hasRole('admin'))
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
