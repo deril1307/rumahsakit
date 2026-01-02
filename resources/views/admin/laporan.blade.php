@@ -48,10 +48,11 @@
                                 <select name="jenis_terapi" id="jenis_terapi"
                                     class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                     <option value="">Semua Jenis</option>
+                                    {{-- PERBAIKAN DISINI: Mengubah nama_jenis menjadi nama_terapi --}}
                                     @foreach ($listJenisTerapi as $jenis)
-                                        <option value="{{ $jenis->nama_jenis }}"
-                                            {{ $jenisTerapi == $jenis->nama_jenis ? 'selected' : '' }}>
-                                            {{ $jenis->nama_jenis }}
+                                        <option value="{{ $jenis->nama_terapi }}"
+                                            {{ $jenisTerapi == $jenis->nama_terapi ? 'selected' : '' }}>
+                                            {{ $jenis->nama_terapi }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -73,8 +74,7 @@
                 <div class="p-6 text-gray-900">
 
                     <div class="flex justify-end mb-4 space-x-2">
-                        {{-- TOMBOL EXCEL (SUDAH DIPERBAIKI) --}}
-                        {{-- Menggunakan route('admin.laporan.excel') dan membawa parameter filter --}}
+                        {{-- TOMBOL EXCEL --}}
                         <a href="{{ route('admin.laporan.excel', request()->query()) }}"
                             class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                             Ekspor ke Excel

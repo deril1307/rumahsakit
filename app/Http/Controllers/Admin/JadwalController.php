@@ -33,10 +33,16 @@ class JadwalController extends Controller
         // Query Dasar
         $query = Jadwal::with(['pasien', 'terapis']);
 
-        // 1. Logika Pencarian Nama Pasien
+        // 1. LOGIKA PENCARIAN (DIPERBARUI)
+        // Sekarang mencari di Nama Pasien ATAU Jenis Terapi
         if ($search) {
-            $query->whereHas('pasien', function ($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                // Cari berdasarkan Nama Pasien
+                $q->whereHas('pasien', function ($subQ) use ($search) {
+                    $subQ->where('nama', 'like', "%{$search}%");
+                })
+                // ATAU Cari berdasarkan Jenis Terapi
+                ->orWhere('jenis_terapi', 'like', "%{$search}%");
             });
         }
 

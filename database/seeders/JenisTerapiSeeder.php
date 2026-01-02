@@ -16,13 +16,35 @@ class JenisTerapiSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        $data = [
-            ['nama_terapi' => 'Fisioterapi', 'created_at' => $now, 'updated_at' => $now],
-            ['nama_terapi' => 'Terapi Okupasi', 'created_at' => $now, 'updated_at' => $now],
-            ['nama_terapi' => 'Terapi Wicara', 'created_at' => $now, 'updated_at' => $now],
-            ['nama_terapi' => 'Psikologi', 'created_at' => $now, 'updated_at' => $now],
+        // 1. HAPUS DATA YANG TIDAK DIPAKAI / TYPO
+        // Kita gunakan whereIn untuk menghapus banyak sekaligus ('Psikoligi' typo & 'Psikologi' asli)
+        DB::table('jenis_terapis')
+            ->whereIn('nama_terapi', ['Psikoligi', 'Psikologi'])
+            ->delete();
+
+        // 2. Daftar Lengkap Jenis Terapi (Hanya yang aktif)
+        // Catatan: 'Psikologi' SUDAH DIHAPUS dari daftar ini
+        $dataTerapi = [
+            'Fisioterapi',
+            'Terapi Okupasi',
+            'Terapi Wicara',
+            // === TAMBAHAN BARU ===
+            'Fisioterapi Anak',
+            'Fisioterapi Stroke',
         ];
 
-        DB::table('jenis_terapis')->insert($data);
+        // 3. Loop untuk Insert atau Update (Agar aman dijalankan berkali-kali)
+        foreach ($dataTerapi as $nama) {
+            DB::table('jenis_terapis')->updateOrInsert(
+                // Kondisi Pengecekan (Cari berdasarkan nama)
+                ['nama_terapi' => $nama], 
+                
+                // Data yang akan disimpan/diupdate
+                [
+                    'created_at' => $now, 
+                    'updated_at' => $now
+                ]
+            );
+        }
     }
 }
