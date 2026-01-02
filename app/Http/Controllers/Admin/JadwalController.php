@@ -166,6 +166,9 @@ class JadwalController extends Controller
         return view('admin.jadwal.edit', compact('jadwal', 'pasiens', 'terapis', 'jenisTerapis'));
     }
 
+    /**
+     * Memperbarui jadwal dengan validasi bentrok & waktu yang ketat
+     */
     public function update(Request $request, $id)
     {
         $jadwal = Jadwal::findOrFail($id);
@@ -181,21 +184,39 @@ class JadwalController extends Controller
             'status' => 'required|in:terjadwal,selesai,batal,pending',
         ]);
 
-        $bentrok = Jadwal::where('user_id', $request->user_id)
-            ->where('tanggal', $request->tanggal)
-            ->where('id', '!=', $id)
+        // ===============================================
+        // 1. LOGIKA CEK WAKTU (Masa Lalu)
+        // ===============================================
+        // Gabungkan tanggal dan jam yang diinputkan form
+        $waktuJadwal = Carbon::parse($request->tanggal . ' ' . $request->jam_mulai);
+        
+        // LOGIKA KETAT:
+        // Cek apakah waktu jadwal sudah lewat (Masa Lalu)
+        if ($waktuJadwal->isPast()) {
+            // Jika jadwal sudah lewat, statusnya TIDAK BOLEH 'terjadwal'.
+            // Admin wajib mengubah status menjadi 'selesai' atau 'batal' jika ingin menyimpan jadwal masa lalu.
+            // Atau admin harus mengubah tanggalnya ke masa depan.
+            if ($request->status == 'terjadwal') {
+                 return back()->withErrors(['error' => 'Waktu sudah terlewat! Untuk jadwal lampau, harap ubah status menjadi Selesai/Batal atau ganti tanggal ke masa depan.']);
+            }
+        }
+
+        // ===============================================
+        // 2. LOGIKA CEK BENTROK (Conflict Check)
+        // ===============================================
+        $bentrok = Jadwal::where('user_id', $request->user_id) // Cek Terapis yang sama
+            ->where('tanggal', $request->tanggal)             // Cek Tanggal yang sama
+            ->where('id', '!=', $id)                          // Abaikan jadwal diri sendiri
+            ->where('status', '!=', 'batal')                  // PENTING: Abaikan jadwal yang sudah dibatalkan
             ->where(function ($query) use ($request) {
-                $query->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
-                      ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai])
-                      ->orWhere(function ($q) use ($request) {
-                          $q->where('jam_mulai', '<=', $request->jam_mulai)
-                            ->where('jam_selesai', '>=', $request->jam_selesai);
-                      });
+                // Logika Overlap: (Jam Mulai Baru < Jam Selesai Lama) DAN (Jam Selesai Baru > Jam Mulai Lama)
+                $query->where('jam_mulai', '<', $request->jam_selesai)
+                      ->where('jam_selesai', '>', $request->jam_mulai);
             })
             ->exists();
 
         if ($bentrok) {
-            return back()->withErrors(['error' => "Jadwal bentrok dengan sesi lain."]);
+            return back()->withErrors(['error' => "Jadwal bentrok! Terapis ini sudah memiliki sesi lain di jam tersebut."]);
         }
 
         $jadwal->update([
