@@ -9,6 +9,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            {{-- SECTION FILTER --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <form method="GET" action="{{ route('admin.laporan.index') }}">
@@ -48,7 +49,6 @@
                                 <select name="jenis_terapi" id="jenis_terapi"
                                     class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                     <option value="">Semua Jenis</option>
-                                    {{-- PERBAIKAN DISINI: Mengubah nama_jenis menjadi nama_terapi --}}
                                     @foreach ($listJenisTerapi as $jenis)
                                         <option value="{{ $jenis->nama_terapi }}"
                                             {{ $jenisTerapi == $jenis->nama_terapi ? 'selected' : '' }}>
@@ -70,21 +70,30 @@
                 </div>
             </div>
 
+            {{-- SECTION TABEL --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    <div class="flex justify-end mb-4 space-x-2">
-                        {{-- TOMBOL EXCEL --}}
-                        <a href="{{ route('admin.laporan.excel', request()->query()) }}"
-                            class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
-                            Ekspor ke Excel
-                        </a>
+                    <div class="flex justify-between items-center mb-4">
+                        {{-- Keterangan Jumlah Data --}}
+                        <div class="text-sm text-gray-500">
+                            Total Data: {{ $laporan->total() }}
+                        </div>
 
-                        {{-- TOMBOL PDF --}}
-                        <a href="{{ route('admin.laporan.pdf', request()->query()) }}" target="_blank"
-                            class="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-md hover:bg-orange-600">
-                            Ekspor ke PDF
-                        </a>
+                        {{-- Tombol Ekspor --}}
+                        <div class="space-x-2">
+                            {{-- TOMBOL EXCEL --}}
+                            <a href="{{ route('admin.laporan.excel', request()->query()) }}"
+                                class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
+                                Ekspor ke Excel
+                            </a>
+
+                            {{-- TOMBOL PDF --}}
+                            <a href="{{ route('admin.laporan.pdf', request()->query()) }}" target="_blank"
+                                class="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-md hover:bg-orange-600">
+                                Ekspor ke PDF
+                            </a>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -179,7 +188,12 @@
                         </table>
                     </div>
 
-                    <div class="mt-4 text-center">
+                    {{-- PAGINATION LINKS --}}
+                    <div class="mt-4">
+                        {{ $laporan->links() }}
+                    </div>
+
+                    <div class="mt-2 text-center">
                         <p class="text-xs text-gray-500">Menampilkan hasil sesuai filter tanggal di atas.</p>
                     </div>
 

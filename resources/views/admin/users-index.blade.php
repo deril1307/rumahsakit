@@ -50,10 +50,11 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($users as $index => $user)
+                                @foreach ($users as $user)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{ $index + 1 }}
+                                            {{-- PERBAIKAN: Rumus Nomor Urut agar tidak reset di halaman 2 --}}
+                                            {{ $users->firstItem() + $loop->index }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $user->name }}
@@ -76,7 +77,6 @@
                                                     </a>
 
                                                     {{-- Tombol HAPUS --}}
-                                                    {{-- Kita bungkus dalam form agar mudah disubmit lewat JS --}}
                                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -96,6 +96,11 @@
                         </table>
                     </div>
 
+                    {{-- TAMBAHAN: Tombol Pindah Halaman (Pagination Links) --}}
+                    <div class="mt-4">
+                        {{ $users->links() }}
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -110,19 +115,18 @@
             // Mencari form terdekat dari tombol yang diklik
             const form = event.target.closest('form');
 
-            // Memunculkan Popup SweetAlert (Mirip Dashboard 'batal')
+            // Memunculkan Popup SweetAlert
             Swal.fire({
                 title: 'Hapus User?',
                 text: "Apakah Anda yakin ingin menghapus user " + userName + "? Tindakan ini tidak bisa dibatalkan.",
-                icon: 'error', // Icon 'error' akan menampilkan tanda silang (X) merah besar
+                icon: 'error', 
                 showCancelButton: true,
-                confirmButtonColor: '#dc2626', // Warna Merah (Tailwind red-600)
-                cancelButtonColor: '#6b7280',  // Warna Abu-abu (Tailwind gray-500)
+                confirmButtonColor: '#dc2626', 
+                cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Hapus',
                 cancelButtonText: 'Kembali / Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Jika user klik tombol YA, baru submit form
                     form.submit();
                 }
             });

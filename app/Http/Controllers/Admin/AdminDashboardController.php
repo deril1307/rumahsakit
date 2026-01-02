@@ -75,7 +75,7 @@ class AdminDashboardController extends Controller
 
     public function usersIndex()
     {
-        $users = User::with('roles')->get();
+        $users = User::with('roles')->paginate(10);
         return view('admin.users-index', [
             'users' => $users
         ]);
@@ -367,7 +367,7 @@ class AdminDashboardController extends Controller
 
     /**
      * MENAMPILKAN HALAMAN LAPORAN ADMIN
-     * Update: Sekarang menggunakan Data Real Database agar sinkron dengan PDF
+     * Update: Menggunakan Pagination 10 Data
      */
     public function laporanIndex(Request $request)
     {
@@ -377,7 +377,7 @@ class AdminDashboardController extends Controller
         $terapisId = $request->input('terapis_id');
         $jenisTerapi = $request->input('jenis_terapi');
 
-        // 2. Query Data Real Database (BUKAN DUMMY LAGI)
+        // 2. Query Data Real Database
         $query = Jadwal::with(['pasien', 'terapis'])
             ->whereBetween('tanggal', [$startDate, $endDate]);
 
@@ -388,10 +388,13 @@ class AdminDashboardController extends Controller
             $query->where('jenis_terapi', $jenisTerapi);
         }
 
-        // Urutkan berdasarkan tanggal
-        $laporan = $query->orderBy('tanggal', 'asc')->get();
+        // 3. Eksekusi Query dengan Pagination
+        // 'withQueryString()' penting agar saat klik Halaman 2, filter tanggal tidak reset
+        $laporan = $query->orderBy('tanggal', 'asc')
+                         ->paginate(10)
+                         ->withQueryString();
 
-        // 3. Data Pendukung Dropdown
+        // 4. Data Pendukung Dropdown
         $listTerapis = User::role('terapis')->get();
         $listJenisTerapi = JenisTerapi::all();
 

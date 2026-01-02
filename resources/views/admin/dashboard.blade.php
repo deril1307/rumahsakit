@@ -1,10 +1,16 @@
 <x-app-layout>
+    {{-- Set Locale ke Indonesia agar tanggal muncul dalam Bahasa Indonesia --}}
+    @php
+        \Carbon\Carbon::setLocale('id');
+    @endphp
+
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Dashboard & Penjadwalan') }}
             </h2>
             <span class="text-sm text-gray-500 bg-white px-3 py-1 rounded shadow-sm">
+                {{-- Menggunakan translatedFormat untuk Header --}}
                 {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
             </span>
         </div>
@@ -91,7 +97,8 @@
                                 @forelse($jadwalTerbaru as $jadwal)
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-900">
-                                            {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('D, d M Y') }}
+                                            {{-- MENGUBAH KE TRANSLATED FORMAT --}}
+                                            {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('l, d F Y') }}
                                         </td>
                                         <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-600">
                                             {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}

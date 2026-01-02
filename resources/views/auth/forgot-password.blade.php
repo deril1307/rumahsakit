@@ -21,7 +21,7 @@
                 :value="old('email')" 
                 required 
                 autofocus 
-                placeholder="Contoh: namaEmail@gmail.com"
+                placeholder="Contoh: namaemail@gmail.com"
             />
             
             <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-600" />
@@ -30,7 +30,7 @@
         <div class="flex flex-col items-center mt-8">
             
             <button type="submit" class="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-lg font-bold text-white bg-[#198746] hover:bg-[#146c38] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
-                {{ __('Kirim Link Ganti Password') }}
+                {{ __('Kirim') }}
             </button>
 
             <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-900 underline text-sm pt-4">
