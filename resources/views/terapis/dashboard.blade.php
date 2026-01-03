@@ -1,8 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard Terapis') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Dashboard Terapis') }}
+            </h2>
+            
+            {{-- Snippet Tanggal Hari Ini --}}
+            <span class="text-sm text-gray-500 bg-white px-3 py-1 rounded shadow-sm border border-gray-100">
+                <i class="fa-regular fa-calendar mr-1"></i>
+                {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
+            </span>
+        </div>
     </x-slot>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -13,6 +21,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
+                    {{-- Filter Section --}}
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                         <h3 class="text-lg font-bold text-gray-900">
                             Jadwal Terapi: <span class="text-indigo-600">{{ $labelFilter }}</span>
@@ -33,32 +42,27 @@
                         </form>
                     </div>
 
+                    {{-- Table Section --}}
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 border">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                         Tanggal & Jam
                                     </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                         Pasien
                                     </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                         Jenis Terapi
                                     </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                         Ruangan
                                     </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                                         Aksi
                                     </th>
                                 </tr>
@@ -69,7 +73,8 @@
 
                                         <td class="px-6 py-2 whitespace-nowrap">
                                             <div class="text-sm font-bold text-indigo-700">
-                                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
+                                                {{-- MENGGUNAKAN TRANSLATED FORMAT AGAR BAHASA INDONESIA --}}
+                                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d F Y') }}
                                             </div>
                                             <div class="text-xs text-gray-500">
                                                 {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} -
@@ -96,23 +101,19 @@
 
                                         <td class="px-6 py-2 whitespace-nowrap">
                                             @if ($jadwal->status == 'terjadwal')
-                                                <span
-                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                                <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                                                     Terjadwal
                                                 </span>
                                             @elseif($jadwal->status == 'selesai')
-                                                <span
-                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">
+                                                <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">
                                                     Selesai
                                                 </span>
                                             @elseif($jadwal->status == 'batal')
-                                                <span
-                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">
+                                                <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 border border-red-200">
                                                     Batal
                                                 </span>
                                             @elseif($jadwal->status == 'pending')
-                                                <span
-                                                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                                                <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                                                     Pending
                                                 </span>
                                             @endif

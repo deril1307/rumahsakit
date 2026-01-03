@@ -24,7 +24,6 @@
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <form method="GET" action="{{ route('kepala.laporan') }}">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                        <!-- Filter Tanggal -->
                         <div>
                             <x-input-label for="start_date" :value="__('Dari Tanggal')" />
                             <x-text-input id="start_date" class="block mt-1 w-full" type="date" name="start_date"
@@ -36,7 +35,6 @@
                                 :value="$endDate" />
                         </div>
 
-                        <!-- Filter Terapis -->
                         <div>
                             <x-input-label for="terapis_id" :value="__('Terapis')" />
                             <select name="terapis_id"
@@ -49,7 +47,6 @@
                             </select>
                         </div>
 
-                        <!-- Tombol Aksi -->
                         <div class="flex space-x-2">
                             <x-primary-button class="w-full justify-center">Filter</x-primary-button>
                             <a href="{{ route('kepala.laporan') }}"
@@ -96,7 +93,7 @@
                                         <td class="border border-gray-300 py-3 px-4 text-center font-bold">
                                             {{ $loop->iteration }}</td>
                                         <td class="border border-gray-300 py-3 px-4">
-                                            <div class="font-bold text-gray-700">{{ $row->tanggal->format('d/m/Y') }}
+                                            <div class="font-bold text-gray-700">{{ \Carbon\Carbon::parse($row->tanggal)->translatedFormat('d/m/Y') }}
                                             </div>
                                             <div class="text-xs">
                                                 {{ \Carbon\Carbon::parse($row->jam_mulai)->format('H:i') }}</div>
@@ -105,13 +102,15 @@
                                             <div class="font-bold text-gray-800">{{ $row->pasien->nama }}</div>
                                             <div class="text-xs text-gray-500">RM: {{ $row->pasien->no_rm }}</div>
                                         </td>
+                                        
+                                        {{-- Kolom Terapis --}}
                                         <td class="border border-gray-300 py-3 px-4">{{ $row->terapis->name }}</td>
+                                        
+                                        {{-- Kolom Layanan (Sudah Dihapus Warna Birunya) --}}
                                         <td class="border border-gray-300 py-3 px-4">
-                                            <span
-                                                class="bg-blue-100 text-blue-800 py-1 px-2 rounded-full text-xs font-semibold">
-                                                {{ $row->jenis_terapi }}
-                                            </span>
+                                            {{ $row->jenis_terapi }}
                                         </td>
+
                                         <td class="border border-gray-300 py-3 px-4">{{ $row->ruangan ?? '-' }}</td>
                                         <td class="border border-gray-300 py-3 px-4 text-center">
                                             @php
@@ -170,7 +169,8 @@
 
                     {{-- FOOTER LAPORAN --}}
                     <div class="mt-12 text-right">
-                        <p class="text-gray-600 text-sm">Bandung, {{ date('d F Y') }}</p>
+                        {{-- Menggunakan Translated Format juga di Footer agar konsisten --}}
+                        <p class="text-gray-600 text-sm">Bandung, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
                         <div class="h-16"></div>
                         <p class="font-bold text-gray-800 border-t border-gray-400 inline-block min-w-[200px] pt-2">
                             Kepala Instalasi Rehabilitasi Medik
