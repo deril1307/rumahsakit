@@ -34,7 +34,9 @@
 
                     <form action="{{ route('admin.jadwal.update', $jadwal->id) }}" method="POST">
                         @csrf
-                        @method('PUT') <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        @method('PUT') 
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                             <div class="col-span-2">
                                 <x-input-label for="pasien_id" :value="__('Pasien')" />
@@ -90,7 +92,7 @@
                             </div>
 
                             <div class="col-span-2 md:col-span-1">
-                                <x-input-label for="ruangan" :value="__('Ruangan')" />
+                                <x-input-label for="ruangan" :value="__('Ruangan (Cek Bentrok)')" />
                                 <x-text-input id="ruangan" class="block mt-1 w-full" type="text" name="ruangan"
                                     :value="old('ruangan', $jadwal->ruangan)" />
                                 <x-input-error :messages="$errors->get('ruangan')" class="mt-2" />
@@ -146,13 +148,11 @@
         </div>
     </div>
 
-    {{-- SCRIPT OTOMATISASI JENIS TERAPI --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const terapisSelect = document.getElementById('user_id');
             const jenisTerapiSelect = document.getElementById('jenis_terapi');
 
-            // Fungsi untuk update jenis terapi
             function updateJenisTerapi() {
                 const selectedOption = terapisSelect.options[terapisSelect.selectedIndex];
                 const spesialisasi = selectedOption.getAttribute('data-spesialisasi');
@@ -166,8 +166,6 @@
                     }
                 }
             }
-
-            // Jalankan saat user memilih terapis
             terapisSelect.addEventListener('change', updateJenisTerapi);
         });
     </script>

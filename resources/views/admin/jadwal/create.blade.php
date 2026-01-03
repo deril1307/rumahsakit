@@ -8,7 +8,6 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-            <!-- Link Kembali -->
             <a href="{{ route('admin.jadwal.index') }}"
                 class="inline-flex items-center mb-4 text-sm text-gray-600 hover:text-gray-900">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,13 +17,11 @@
                 Kembali ke Daftar Jadwal
             </a>
 
-            <!-- Card Form -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
                     <h3 class="text-lg font-medium text-gray-900 mb-6">Form Penjadwalan Pasien</h3>
 
-                    <!-- Tampilkan Error Validasi Global -->
                     @if ($errors->any())
                         <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4">
                             <div class="flex">
@@ -37,10 +34,7 @@
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm text-red-700">
-                                        Periksa kembali inputan Anda.
-                                        @foreach ($errors->all() as $error)
-                                            <span class="block font-medium">- {{ $error }}</span>
-                                        @endforeach
+                                        Gagal menyimpan jadwal. Periksa pesan error di bawah inputan.
                                     </p>
                                 </div>
                             </div>
@@ -50,10 +44,8 @@
                     <form action="{{ route('admin.jadwal.store') }}" method="POST">
                         @csrf
 
-                        <!-- Grid Layout -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                            <!-- 1. Pilih Pasien -->
                             <div class="col-span-2">
                                 <x-input-label for="pasien_id" :value="__('Pilih Pasien')" />
                                 <select id="pasien_id" name="pasien_id"
@@ -69,8 +61,6 @@
                                 <x-input-error :messages="$errors->get('pasien_id')" class="mt-2" />
                             </div>
 
-                            <!-- 2. Pilih Terapis (Dipindah ke Atas agar UX lebih baik) -->
-                            <!-- Script di bawah akan membaca 'data-spesialisasi' dari sini -->
                             <div>
                                 <x-input-label for="user_id" :value="__('Pilih Terapis')" />
                                 <select id="user_id" name="user_id"
@@ -87,13 +77,8 @@
                                 <x-input-error :messages="$errors->get('user_id')" class="mt-2" />
                             </div>
 
-                            <!-- 3. Pilih Jenis Terapi (Otomatis Terisi & Readonly) -->
-                            <!-- Kita gunakan class 'pointer-events-none bg-gray-100' untuk efek visual readonly -->
                             <div>
                                 <x-input-label for="jenis_terapi" :value="__('Jenis Terapi (Otomatis)')" />
-
-                                <!-- Input Select yang sebenarnya (untuk display & kirim data) -->
-                                <!-- Kita tambahkan sedikit trik JS di bawah agar valuenya terkunci -->
                                 <select id="jenis_terapi" name="jenis_terapi"
                                     class="mt-1 block w-full border-gray-300 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm cursor-not-allowed pointer-events-none"
                                     tabindex="-1" aria-readonly="true">
@@ -108,7 +93,6 @@
                                 <x-input-error :messages="$errors->get('jenis_terapi')" class="mt-2" />
                             </div>
 
-                            <!-- 4. Tanggal Terapi -->
                             <div class="col-span-2 md:col-span-1">
                                 <x-input-label for="tanggal" :value="__('Tanggal Mulai')" />
                                 <x-text-input id="tanggal" class="block mt-1 w-full" type="date" name="tanggal"
@@ -116,15 +100,13 @@
                                 <x-input-error :messages="$errors->get('tanggal')" class="mt-2" />
                             </div>
 
-                            <!-- 5. Ruangan -->
                             <div class="col-span-2 md:col-span-1">
-                                <x-input-label for="ruangan" :value="__('Ruangan (Opsional)')" />
+                                <x-input-label for="ruangan" :value="__('Ruangan (Wajib beda jika jam sama)')" />
                                 <x-text-input id="ruangan" class="block mt-1 w-full" type="text" name="ruangan"
-                                    :value="old('ruangan')" placeholder="Contoh: Ruang Fisioterapi A" />
+                                    :value="old('ruangan')" placeholder="Contoh: Ruang A" />
                                 <x-input-error :messages="$errors->get('ruangan')" class="mt-2" />
                             </div>
 
-                            <!-- 6. Jam Mulai & Selesai -->
                             <div class="col-span-2 md:col-span-1">
                                 <x-input-label for="jam_mulai" :value="__('Jam Mulai')" />
                                 <x-text-input id="jam_mulai" class="block mt-1 w-full" type="time" name="jam_mulai"
@@ -139,7 +121,6 @@
                                 <x-input-error :messages="$errors->get('jam_selesai')" class="mt-2" />
                             </div>
 
-                            <!-- 7. Opsi Generate -->
                             <div class="col-span-2 mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                                 <div class="flex items-start">
                                     <div class="flex items-center h-5">
@@ -150,15 +131,13 @@
                                     <div class="ml-3 text-sm">
                                         <label for="generate_bulan" class="font-medium text-gray-700">Generate Jadwal
                                             Otomatis untuk 1 Bulan?</label>
-                                        <p class="text-gray-500">Jika dicentang, sistem akan membuat 4 jadwal (seminggu
-                                            sekali) pada hari dan jam yang sama mulai dari tanggal yang dipilih.</p>
+                                        <p class="text-gray-500">Jika dicentang, sistem akan membuat 8 jadwal.</p>
                                     </div>
                                 </div>
                             </div>
 
                         </div>
 
-                        <!-- Tombol Submit -->
                         <div class="flex items-center justify-end mt-6">
                             <x-secondary-button type="button" onclick="window.history.back()" class="mr-3">
                                 Batal
@@ -181,31 +160,22 @@
             const terapisSelect = document.getElementById('user_id');
             const jenisTerapiSelect = document.getElementById('jenis_terapi');
 
-            // Fungsi untuk update jenis terapi
             function updateJenisTerapi() {
                 const selectedOption = terapisSelect.options[terapisSelect.selectedIndex];
                 const spesialisasi = selectedOption.getAttribute('data-spesialisasi');
 
                 if (spesialisasi) {
-                    // Cari opsi yang value-nya sama dengan spesialisasi terapis
                     for (let i = 0; i < jenisTerapiSelect.options.length; i++) {
-                        // Kita gunakan 'includes' atau match sederhana untuk fleksibilitas
-                        // Pastikan nama di database 'users.spesialisasi' sama persis dengan 'jenis_terapis.nama_terapi'
                         if (jenisTerapiSelect.options[i].value === spesialisasi) {
                             jenisTerapiSelect.selectedIndex = i;
                             break;
                         }
                     }
                 } else {
-                    // Reset jika tidak ada spesialisasi (misal pilihan default)
                     jenisTerapiSelect.selectedIndex = 0;
                 }
             }
-
-            // Jalankan saat user memilih terapis
             terapisSelect.addEventListener('change', updateJenisTerapi);
-
-            // Jalankan sekali saat halaman dimuat (untuk handle old input saat validasi error)
             if (terapisSelect.value) {
                 updateJenisTerapi();
             }

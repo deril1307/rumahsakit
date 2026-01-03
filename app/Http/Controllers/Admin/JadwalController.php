@@ -91,7 +91,7 @@ class JadwalController extends Controller
         return view('admin.jadwal.create', compact('pasiens', 'terapis', 'jenisTerapis'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'pasien_id' => 'required|exists:pasiens,id',
@@ -100,7 +100,7 @@ class JadwalController extends Controller
             'tanggal' => 'required|date',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            'ruangan' => 'nullable|string',
+            'ruangan' => 'nullable|string', // Ruangan opsional, tapi kalau diisi akan divalidasi
             'generate_bulan' => 'nullable|boolean',
         ]);
 
@@ -110,57 +110,90 @@ class JadwalController extends Controller
             $tanggal = Carbon::parse($request->tanggal);
             $jamMulai = $request->jam_mulai;
             $jamSelesai = $request->jam_selesai;
-            $loops = $request->generate_bulan ? 4 : 1; 
 
-            for ($i = 0; $i < $loops; $i++) {
-                
-                $bentrok = Jadwal::where('user_id', $request->user_id)
-                    ->where('tanggal', $tanggal->format('Y-m-d'))
+            // --- LOGIKA: 8x Pertemuan (1 Paket) atau 1x Saja ---
+            $totalPertemuan = $request->generate_bulan ? 8 : 1; 
+            
+            for ($i = 0; $i < $totalPertemuan; $i++) {
+                $tanggalFormat = $tanggal->format('Y-m-d');
+
+                // ---------------------------------------------------------
+                // 1. CEK BENTROK TERAPIS
+                // (Terapis tidak boleh menangani 2 pasien di jam yang sama)
+                // ---------------------------------------------------------
+                $bentrokTerapis = Jadwal::where('user_id', $request->user_id)
+                    ->where('tanggal', $tanggalFormat)
+                    ->where('status', '!=', 'batal') // Abaikan yang sudah batal
                     ->where(function ($query) use ($jamMulai, $jamSelesai) {
-                        $query->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                              ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                              ->orWhere(function ($q) use ($jamMulai, $jamSelesai) {
-                                  $q->where('jam_mulai', '<=', $jamMulai)
-                                    ->where('jam_selesai', '>=', $jamSelesai);
-                              });
+                        // Logika Overlap Modern & Akurat
+                        $query->where('jam_mulai', '<', $jamSelesai)
+                              ->where('jam_selesai', '>', $jamMulai);
                     })
                     ->exists();
 
-                if ($bentrok) {
+                if ($bentrokTerapis) {
                     DB::rollBack();
-                    return back()->withErrors(['error' => "Jadwal bentrok untuk terapis tersebut pada tanggal " . $tanggal->format('d-m-Y')]);
+                    return back()->withInput()->withErrors(['user_id' => "Terapis sudah ada jadwal lain pada tanggal " . $tanggal->format('d-m-Y') . " di jam tersebut."]);
                 }
 
+                // ---------------------------------------------------------
+                // 2. CEK BENTROK RUANGAN (BARU)
+                // (Ruangan tidak boleh dipakai 2 orang berbeda di jam sama)
+                // ---------------------------------------------------------
+                if ($request->filled('ruangan')) {
+                    $bentrokRuangan = Jadwal::where('ruangan', $request->ruangan)
+                        ->where('tanggal', $tanggalFormat)
+                        ->where('status', '!=', 'batal')
+                        ->where(function ($query) use ($jamMulai, $jamSelesai) {
+                            $query->where('jam_mulai', '<', $jamSelesai)
+                                  ->where('jam_selesai', '>', $jamMulai);
+                        })
+                        ->exists();
+
+                    if ($bentrokRuangan) {
+                        DB::rollBack();
+                        return back()->withInput()->withErrors(['ruangan' => "Ruangan '$request->ruangan' sudah terpakai pada tanggal " . $tanggal->format('d-m-Y') . " jam segitu. Harap pilih ruangan lain."]);
+                    }
+                }
+
+                // ---------------------------------------------------------
+                // 3. SIMPAN JADWAL
+                // ---------------------------------------------------------
                 $jadwalBaru = Jadwal::create([
                     'pasien_id' => $request->pasien_id,
                     'user_id' => $request->user_id,
                     'jenis_terapi' => $request->jenis_terapi,
-                    'tanggal' => $tanggal->format('Y-m-d'),
+                    'tanggal' => $tanggalFormat,
                     'jam_mulai' => $jamMulai,
                     'jam_selesai' => $jamSelesai,
                     'ruangan' => $request->ruangan,
                     'status' => 'terjadwal',
                 ]);
 
-                // === NOTIFIKASI JADWAL BARU ===
-                // Notifikasi ini akan membawa data ID jadwal agar bisa diredirect
+                // Notifikasi (Opsional)
                 $terapis = User::find($request->user_id);
                 if ($terapis) {
-                    $terapis->notify(new JadwalBaruNotification($jadwalBaru));
+                    // $terapis->notify(new JadwalBaruNotification($jadwalBaru));
                 }
-                // ==============================
 
-                $tanggal->addWeek();
+                // LOGIKA UNTUK TANGGAL BERIKUTNYA (GENERATE BULAN)
+                if ($request->generate_bulan) {
+                    $tanggal->addDays(3); // Tambah 3 hari
+                    if ($tanggal->isSunday()) {
+                        $tanggal->addDay(); // Skip minggu
+                    }
+                }
             }
 
             DB::commit();
-            return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil dibuat.');
+            return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil dibuat (' . $totalPertemuan . ' sesi).');
 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
         }
     }
+
 
     public function edit($id)
     {
@@ -190,41 +223,53 @@ class JadwalController extends Controller
             'status' => 'required|in:terjadwal,selesai,batal,pending',
         ]);
 
-        // ===============================================
-        // 1. LOGIKA CEK WAKTU (Masa Lalu)
-        // ===============================================
-        // Gabungkan tanggal dan jam yang diinputkan form
         $waktuJadwal = Carbon::parse($request->tanggal . ' ' . $request->jam_mulai);
         
-        // LOGIKA KETAT:
-        // Cek apakah waktu jadwal sudah lewat (Masa Lalu)
-        if ($waktuJadwal->isPast()) {
-            // Jika jadwal sudah lewat, statusnya TIDAK BOLEH 'terjadwal'.
-            // Admin wajib mengubah status menjadi 'selesai' atau 'batal' jika ingin menyimpan jadwal masa lalu.
-            // Atau admin harus mengubah tanggalnya ke masa depan.
-            if ($request->status == 'terjadwal') {
-                 return back()->withErrors(['error' => 'Waktu sudah terlewat! Untuk jadwal lampau, harap ubah status menjadi Selesai/Batal atau ganti tanggal ke masa depan.']);
-            }
+        // 1. Cek Masa Lalu
+        if ($waktuJadwal->isPast() && $request->status == 'terjadwal') {
+             // Izinkan edit jika hanya mengubah status (bukan mengubah jam jadi masa lalu)
+             // Tapi untuk keamanan data, peringatan ini bagus.
+             // return back()->withErrors(['error' => 'Waktu sudah terlewat!']); 
+             // (Opsional: dinonaktifkan sementara agar fleksibel, atau biarkan aktif sesuai kebijakan RS)
         }
 
-        // ===============================================
-        // 2. LOGIKA CEK BENTROK (Conflict Check)
-        // ===============================================
-        $bentrok = Jadwal::where('user_id', $request->user_id) // Cek Terapis yang sama
-            ->where('tanggal', $request->tanggal)             // Cek Tanggal yang sama
-            ->where('id', '!=', $id)                          // Abaikan jadwal diri sendiri
-            ->where('status', '!=', 'batal')                  // PENTING: Abaikan jadwal yang sudah dibatalkan
+        // ---------------------------------------------------------
+        // 2. CEK BENTROK TERAPIS
+        // ---------------------------------------------------------
+        $bentrokTerapis = Jadwal::where('user_id', $request->user_id)
+            ->where('tanggal', $request->tanggal)
+            ->where('id', '!=', $id)            // Abaikan diri sendiri
+            ->where('status', '!=', 'batal')    // Abaikan jadwal batal
             ->where(function ($query) use ($request) {
-                // Logika Overlap: (Jam Mulai Baru < Jam Selesai Lama) DAN (Jam Selesai Baru > Jam Mulai Lama)
                 $query->where('jam_mulai', '<', $request->jam_selesai)
                       ->where('jam_selesai', '>', $request->jam_mulai);
             })
             ->exists();
 
-        if ($bentrok) {
-            return back()->withErrors(['error' => "Jadwal bentrok! Terapis ini sudah memiliki sesi lain di jam tersebut."]);
+        if ($bentrokTerapis) {
+            return back()->withInput()->withErrors(['user_id' => "Jadwal bentrok! Terapis ini sibuk di jam tersebut."]);
         }
 
+        // ---------------------------------------------------------
+        // 3. CEK BENTROK RUANGAN (BARU)
+        // ---------------------------------------------------------
+        if ($request->filled('ruangan')) {
+            $bentrokRuangan = Jadwal::where('ruangan', $request->ruangan)
+                ->where('tanggal', $request->tanggal)
+                ->where('id', '!=', $id)            // Abaikan diri sendiri
+                ->where('status', '!=', 'batal')
+                ->where(function ($query) use ($request) {
+                    $query->where('jam_mulai', '<', $request->jam_selesai)
+                          ->where('jam_selesai', '>', $request->jam_mulai);
+                })
+                ->exists();
+
+            if ($bentrokRuangan) {
+                return back()->withInput()->withErrors(['ruangan' => "Ruangan '$request->ruangan' sudah dipakai oleh sesi lain di jam tersebut."]);
+            }
+        }
+
+        // Update
         $jadwal->update([
             'pasien_id' => $request->pasien_id,
             'user_id' => $request->user_id,
@@ -236,17 +281,16 @@ class JadwalController extends Controller
             'status' => $request->status,
         ]);
 
-        // === NOTIFIKASI UPDATE JADWAL ===
-        // Notifikasi ini akan membawa data ID jadwal agar bisa diredirect ke detailnya
+        // Notifikasi Update
         $terapis = User::find($request->user_id);
         if ($terapis) {
-            $terapis->notify(new JadwalUpdateNotification($jadwal));
+            // $terapis->notify(new JadwalUpdateNotification($jadwal));
         }
-        // ================================
 
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
     }
 
+    
     public function destroy($id)
     {
         $jadwal = Jadwal::findOrFail($id);
@@ -257,9 +301,33 @@ class JadwalController extends Controller
 
     public function cetak($id)
     {
-        $jadwal = Jadwal::with(['pasien', 'terapis'])->findOrFail($id);
-        $pdf = Pdf::loadView('admin.jadwal.pdf', compact('jadwal'));
-        $pdf->setPaper('a5', 'landscape');
-        return $pdf->stream('Tiket-Jadwal-' . $jadwal->pasien->no_rm . '.pdf');
+        // 1. Ambil jadwal yang diklik
+        $jadwalDipilih = Jadwal::with(['pasien', 'terapis'])->findOrFail($id);
+        
+        // --- PERBAIKAN DISINI ---
+        // Kita paksa ubah jadi Carbon dulu biar editor tidak error
+        $tanggalCarbon = \Carbon\Carbon::parse($jadwalDipilih->tanggal);
+
+        // 2. Cari SEMUA jadwal pasien tersebut di BULAN & TAHUN yang sama
+        $listJadwal = Jadwal::with(['pasien', 'terapis'])
+            ->where('pasien_id', $jadwalDipilih->pasien_id)
+            ->whereMonth('tanggal', $tanggalCarbon->month) // Pakai variabel $tanggalCarbon
+            ->whereYear('tanggal', $tanggalCarbon->year)   // Pakai variabel $tanggalCarbon
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        // 3. Siapkan data untuk view
+        $data = [
+            'pasien' => $jadwalDipilih->pasien,
+            'terapis' => $jadwalDipilih->terapis,
+            'jenis_terapi' => $jadwalDipilih->jenis_terapi,
+            // Pakai $tanggalCarbon juga disini
+            'periode' => $tanggalCarbon->translatedFormat('F Y'), 
+            'listJadwal' => $listJadwal
+        ];
+
+        $pdf = Pdf::loadView('admin.jadwal.pdf', $data);
+        $pdf->setPaper('a4', 'portrait'); 
+        return $pdf->stream('Jadwal-Terapi-' . $jadwalDipilih->pasien->no_rm . '.pdf');
     }
 }
