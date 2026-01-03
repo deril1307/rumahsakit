@@ -59,19 +59,19 @@
                                     </option>
                                     <option disabled>──────────</option>
                                     <option value="hari_ini" {{ request('filter') == 'hari_ini' ? 'selected' : '' }}>
-                                        📅 Hari Ini
+                                        Hari Ini
                                     </option>
                                     <option value="minggu_ini" {{ request('filter') == 'minggu_ini' ? 'selected' : '' }}>
-                                        📅 7 Hari Terakhir
+                                        7 Hari Terakhir
                                     </option>
                                     <option value="bulan_ini" {{ request('filter') == 'bulan_ini' ? 'selected' : '' }}>
-                                        📅 Bulan Ini
+                                        Bulan Ini
                                     </option>
                                     <option value="bulan_lalu" {{ request('filter') == 'bulan_lalu' ? 'selected' : '' }}>
-                                        📅 Bulan Lalu
+                                        Bulan Lalu
                                     </option>
                                     <option value="6_bulan" {{ request('filter') == '6_bulan' ? 'selected' : '' }}>
-                                        📅 6 Bulan Terakhir
+                                        6 Bulan Terakhir
                                     </option>
                                 </select>
 
@@ -150,6 +150,11 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    {{-- KOLOM NO --}}
+                                    <th scope="col"
+                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                                        No
+                                    </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Tanggal & Jam
@@ -183,6 +188,10 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse ($jadwals as $jadwal)
                                     <tr class="hover:bg-gray-50 transition-colors">
+                                        {{-- ISI KOLOM NO --}}
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                            {{ $jadwals->firstItem() + $loop->index }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
@@ -261,7 +270,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7"
+                                        <td colspan="8"
                                             class="px-6 py-12 whitespace-nowrap text-center text-sm text-gray-500">
                                             @if (request('search') || request('filter'))
                                                 Tidak ditemukan jadwal dengan filter/pencarian ini.

@@ -290,7 +290,7 @@ class JadwalController extends Controller
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
     }
 
-    
+
     public function destroy($id)
     {
         $jadwal = Jadwal::findOrFail($id);
@@ -299,30 +299,56 @@ class JadwalController extends Controller
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
     }
 
-    public function cetak($id)
+   public function cetak($id)
     {
-        // 1. Ambil jadwal yang diklik
+        // 1. Ambil jadwal yang diklik sebagai acuan
         $jadwalDipilih = Jadwal::with(['pasien', 'terapis'])->findOrFail($id);
         
-        // --- PERBAIKAN DISINI ---
-        // Kita paksa ubah jadi Carbon dulu biar editor tidak error
-        $tanggalCarbon = \Carbon\Carbon::parse($jadwalDipilih->tanggal);
+        $tanggalAcuan = \Carbon\Carbon::parse($jadwalDipilih->tanggal);
 
-        // 2. Cari SEMUA jadwal pasien tersebut di BULAN & TAHUN yang sama
+        // 2. LOGIKA BARU: SMART RANGE
+        // Daripada hanya mengambil bulan ini, kita ambil jadwal "disekitar" tanggal acuan.
+        // Kita ambil rentang -1 bulan sampai +1 bulan (Total window 3 bulan)
+        // Ini memastikan jika paket terapi menyeberang bulan (Jan-Feb), keduanya tetap terambil
+        // baik saat user klik jadwal Januari maupun jadwal Februari.
+        
+        $startDate = $tanggalAcuan->copy()->subMonth()->startOfMonth(); // Awal bulan lalu
+        $endDate   = $tanggalAcuan->copy()->addMonth()->endOfMonth();   // Akhir bulan depan
+
         $listJadwal = Jadwal::with(['pasien', 'terapis'])
-            ->where('pasien_id', $jadwalDipilih->pasien_id)
-            ->whereMonth('tanggal', $tanggalCarbon->month) // Pakai variabel $tanggalCarbon
-            ->whereYear('tanggal', $tanggalCarbon->year)   // Pakai variabel $tanggalCarbon
+            ->where('pasien_id', $jadwalDipilih->pasien_id) // Hanya pasien ini
+            ->where('jenis_terapi', $jadwalDipilih->jenis_terapi) // Hanya jenis terapi ini
+            ->whereBetween('tanggal', [$startDate, $endDate]) // Rentang waktu fleksibel
+            ->where('status', '!=', 'batal') // Opsional: Jangan cetak yang batal
             ->orderBy('tanggal', 'asc')
             ->get();
 
-        // 3. Siapkan data untuk view
+        // 3. GENERATE LABEL PERIODE DINAMIS
+        // Cek tanggal paling awal dan paling akhir dari data yang ditemukan
+        if ($listJadwal->count() > 0) {
+            $firstDate = \Carbon\Carbon::parse($listJadwal->first()->tanggal);
+            $lastDate  = \Carbon\Carbon::parse($listJadwal->last()->tanggal);
+
+            if ($firstDate->format('F Y') == $lastDate->format('F Y')) {
+                // Jika bulan dan tahun sama: "Januari 2026"
+                $periodeLabel = $firstDate->translatedFormat('F Y');
+            } elseif ($firstDate->year == $lastDate->year) {
+                // Jika tahun sama beda bulan: "Januari - Februari 2026"
+                $periodeLabel = $firstDate->translatedFormat('F') . ' - ' . $lastDate->translatedFormat('F Y');
+            } else {
+                // Jika beda tahun: "Desember 2025 - Januari 2026"
+                $periodeLabel = $firstDate->translatedFormat('F Y') . ' - ' . $lastDate->translatedFormat('F Y');
+            }
+        } else {
+            $periodeLabel = $tanggalAcuan->translatedFormat('F Y');
+        }
+
+        // 4. Siapkan data
         $data = [
             'pasien' => $jadwalDipilih->pasien,
             'terapis' => $jadwalDipilih->terapis,
             'jenis_terapi' => $jadwalDipilih->jenis_terapi,
-            // Pakai $tanggalCarbon juga disini
-            'periode' => $tanggalCarbon->translatedFormat('F Y'), 
+            'periode' => $periodeLabel, // Label periode otomatis
             'listJadwal' => $listJadwal
         ];
 
@@ -330,4 +356,6 @@ class JadwalController extends Controller
         $pdf->setPaper('a4', 'portrait'); 
         return $pdf->stream('Jadwal-Terapi-' . $jadwalDipilih->pasien->no_rm . '.pdf');
     }
+
+    
 }
