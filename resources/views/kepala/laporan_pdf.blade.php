@@ -118,7 +118,7 @@
                 <th style="width: 20%">Terapis</th>
                 <th style="width: 15%">Layanan</th>
                 <th style="width: 10%">Status</th>
-                <th style="width: 8%">Ket</th>
+                <th style="width: 8%">Ruangan</th>
             </tr>
         </thead>
         <tbody>
