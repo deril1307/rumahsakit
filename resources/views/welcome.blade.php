@@ -17,7 +17,6 @@
 <body class="antialiased">
 
     <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-center bg-white">
-
         @if (Route::has('login'))
             <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
                 @auth
@@ -31,7 +30,6 @@
                 @endauth
             </div>
         @endif
-
         <div class="max-w-7xl mx-auto p-6 lg:p-8 flex flex-col items-center justify-center">
 
             {{-- ============================================= --}}
