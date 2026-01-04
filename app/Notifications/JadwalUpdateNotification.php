@@ -18,16 +18,17 @@ class JadwalUpdateNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database']; // Simpan ke database
+        return ['database'];
     }
 
     public function toArray($notifiable)
     {
         return [
+            // PENTING: ID ini digunakan Route untuk cek apakah data masih ada
             'jadwal_id' => $this->jadwal->id,
+            
             'title' => 'Perubahan Jadwal',
             'message' => 'Admin telah memperbarui jadwal pasien ' . $this->jadwal->pasien->nama . ' pada tanggal ' . $this->jadwal->tanggal,
-            // PERBAIKAN DISINI: Sekarang mengarah ke halaman edit jadwal, bukan dashboard
             'url' => route('terapis.jadwal.edit', $this->jadwal->id), 
             'type' => 'warning'
         ];

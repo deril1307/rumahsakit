@@ -170,10 +170,10 @@ class JadwalController extends Controller
                     'status' => 'terjadwal',
                 ]);
 
-                // Notifikasi (Opsional)
+                // Notifikasi (SUDAH DIPERBAIKI: UNCOMMENT)
                 $terapis = User::find($request->user_id);
                 if ($terapis) {
-                    // $terapis->notify(new JadwalBaruNotification($jadwalBaru));
+                    $terapis->notify(new JadwalBaruNotification($jadwalBaru));
                 }
 
                 // LOGIKA UNTUK TANGGAL BERIKUTNYA (GENERATE BULAN)
@@ -228,9 +228,6 @@ class JadwalController extends Controller
         // 1. Cek Masa Lalu
         if ($waktuJadwal->isPast() && $request->status == 'terjadwal') {
              // Izinkan edit jika hanya mengubah status (bukan mengubah jam jadi masa lalu)
-             // Tapi untuk keamanan data, peringatan ini bagus.
-             // return back()->withErrors(['error' => 'Waktu sudah terlewat!']); 
-             // (Opsional: dinonaktifkan sementara agar fleksibel, atau biarkan aktif sesuai kebijakan RS)
         }
 
         // ---------------------------------------------------------
@@ -281,10 +278,10 @@ class JadwalController extends Controller
             'status' => $request->status,
         ]);
 
-        // Notifikasi Update
+        // Notifikasi Update (SUDAH DIPERBAIKI: UNCOMMENT)
         $terapis = User::find($request->user_id);
         if ($terapis) {
-            // $terapis->notify(new JadwalUpdateNotification($jadwal));
+            $terapis->notify(new JadwalUpdateNotification($jadwal));
         }
 
         return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
@@ -307,11 +304,6 @@ class JadwalController extends Controller
         $tanggalAcuan = \Carbon\Carbon::parse($jadwalDipilih->tanggal);
 
         // 2. LOGIKA BARU: SMART RANGE
-        // Daripada hanya mengambil bulan ini, kita ambil jadwal "disekitar" tanggal acuan.
-        // Kita ambil rentang -1 bulan sampai +1 bulan (Total window 3 bulan)
-        // Ini memastikan jika paket terapi menyeberang bulan (Jan-Feb), keduanya tetap terambil
-        // baik saat user klik jadwal Januari maupun jadwal Februari.
-        
         $startDate = $tanggalAcuan->copy()->subMonth()->startOfMonth(); // Awal bulan lalu
         $endDate   = $tanggalAcuan->copy()->addMonth()->endOfMonth();   // Akhir bulan depan
 
@@ -324,7 +316,6 @@ class JadwalController extends Controller
             ->get();
 
         // 3. GENERATE LABEL PERIODE DINAMIS
-        // Cek tanggal paling awal dan paling akhir dari data yang ditemukan
         if ($listJadwal->count() > 0) {
             $firstDate = \Carbon\Carbon::parse($listJadwal->first()->tanggal);
             $lastDate  = \Carbon\Carbon::parse($listJadwal->last()->tanggal);

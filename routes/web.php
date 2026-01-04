@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Terapis\TerapisDashboardController;
 // PENTING: Tambahkan ini untuk KepalaDashboardController agar route dashboard kepala berfungsi
 use App\Http\Controllers\Kepala\KepalaDashboardController; 
+// PENTING: Import Model Jadwal untuk pengecekan notifikasi
+use App\Models\Jadwal; 
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -69,7 +71,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::delete('/admin/terapis/{id}', [AdminDashboardController::class, 'terapisDestroy'])
          ->name('admin.terapis.destroy');
 
-    // === MANAJEMEN JADWAL (UPDATE LENGKAP) ===
+    // === MANAJEMEN JADWAL ===
     Route::get('/admin/jadwal', [JadwalController::class, 'index'])->name('admin.jadwal.index');
     Route::get('/admin/jadwal/create', [JadwalController::class, 'create'])->name('admin.jadwal.create');
     Route::post('/admin/jadwal', [JadwalController::class, 'store'])->name('admin.jadwal.store');
@@ -88,11 +90,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/laporan', [AdminDashboardController::class, 'laporanIndex'])
          ->name('admin.laporan.index');
     
-    // ===> TAMBAHAN BARU: ROUTE EKSPOR PDF <===
+    // Route Ekspor
     Route::get('/admin/laporan/pdf', [AdminDashboardController::class, 'exportPdf'])
          ->name('admin.laporan.pdf');
-
-    // ===> TAMBAHAN BARU: ROUTE EKSPOR EXCEL <===
     Route::get('/admin/laporan/excel', [AdminDashboardController::class, 'exportExcel'])
          ->name('admin.laporan.excel');
     
@@ -133,11 +133,11 @@ Route::middleware(['auth', 'verified', 'role:kepala'])->group(function () {
     Route::get('/kepala/dashboard', [KepalaDashboardController::class, 'index'])
         ->name('kepala.dashboard');
 
-    // Laporan Kepala (Method Index)
+    // Laporan Kepala
     Route::get('/kepala/laporan', [KepalaLaporanController::class, 'index'])
          ->name('kepala.laporan');
          
-    // Cetak Laporan Kepala (Method Baru)
+    // Cetak Laporan Kepala
     Route::get('/kepala/laporan/cetak', [KepalaLaporanController::class, 'cetakPdf'])
          ->name('kepala.laporan.cetak');
 });
@@ -152,18 +152,44 @@ Route::middleware('auth')->group(function () {
 });
 
 // ============================================
-// ========== ROUTES NOTIFIKASI (BARU) ========
+// ========== ROUTES NOTIFIKASI (LOGIKA FIX) ==
 // ============================================
-// Route ini bisa diakses oleh Admin, Terapis, dll (selama login)
 Route::middleware(['auth', 'verified'])->group(function () {
+    
     Route::get('/notifikasi/{id}/baca', function ($id) {
+        // Cari notifikasi milik user yang sedang login
         $notif = auth()->user()->notifications()->find($id);
+        
         if ($notif) {
             $notif->markAsRead(); // Tandai sudah dibaca
-            return redirect($notif->data['url'] ?? route('dashboard')); // Redirect ke halaman detail
+
+            // === LOGIKA CEK KETERSEDIAAN DATA ===
+            // Ambil jadwal_id dari data notifikasi (jika ada)
+            $jadwalId = $notif->data['jadwal_id'] ?? null;
+            $urlTujuan = $notif->data['url'] ?? route('dashboard');
+
+            // Jika notifikasi ini memiliki ID Jadwal, kita cek di database
+            if ($jadwalId) {
+                // Cari jadwal di database menggunakan Model Jadwal
+                // Pastikan "use App\Models\Jadwal;" ada di paling atas file
+                $cekJadwal = Jadwal::find($jadwalId);
+
+                // JIKA JADWAL TIDAK DITEMUKAN (Sudah dihapus Admin)
+                if (!$cekJadwal) {
+                    // Redirect ke Dashboard dengan pesan error khusus
+                    // Pesan inilah yang akan ditangkap oleh SweetAlert
+                    return redirect()->route('dashboard')
+                        ->with('error', 'Maaf, Pasien tidak tersedia (Data jadwal telah dihapus oleh Admin).');
+                }
+            }
+            
+            // Jika data aman (masih ada), lanjutkan ke halaman detail
+            return redirect($urlTujuan);
         }
+
         return back();
     })->name('notifikasi.baca');
+
 });
 
 require __DIR__.'/auth.php';

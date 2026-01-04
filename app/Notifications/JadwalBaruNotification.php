@@ -24,10 +24,12 @@ class JadwalBaruNotification extends Notification
     public function toArray($notifiable)
     {
         return [
+            // PENTING: ID ini digunakan Route untuk cek apakah data masih ada
             'jadwal_id' => $this->jadwal->id,
+            
             'title' => 'Jadwal Baru',
+            // Gunakan string concatenation agar nama tersimpan sebagai teks (tidak error jika pasien dihapus)
             'message' => 'Anda memiliki jadwal baru dengan pasien ' . $this->jadwal->pasien->nama . ' pada tanggal ' . $this->jadwal->tanggal,
-            // PERBAIKAN DISINI: Arahkan langsung ke halaman edit/detail jadwal spesifik
             'url' => route('terapis.jadwal.edit', $this->jadwal->id),
             'type' => 'info'
         ];
