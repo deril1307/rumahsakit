@@ -4,9 +4,9 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Laporan Kinerja Instalasi') }}
             </h2>
-            {{-- Tombol Export PDF --}}
+            {{-- Tombol Export PDF (Warna Merah diubah menjadi Abu Gelap/Hitam) --}}
             <a href="{{ route('kepala.laporan.cetak', request()->all()) }}" target="_blank"
-                class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
@@ -106,24 +106,22 @@
                                         {{-- Kolom Terapis --}}
                                         <td class="border border-gray-300 py-3 px-4">{{ $row->terapis->name }}</td>
                                         
-                                        {{-- Kolom Layanan (Sudah Dihapus Warna Birunya) --}}
+                                        {{-- Kolom Layanan --}}
                                         <td class="border border-gray-300 py-3 px-4">
                                             {{ $row->jenis_terapi }}
                                         </td>
 
                                         <td class="border border-gray-300 py-3 px-4">{{ $row->ruangan ?? '-' }}</td>
+                                        
+                                        {{-- Kolom Status (SEMUA WARNA DIHAPUS, DIGANTI ABU-ABU/HITAM) --}}
                                         <td class="border border-gray-300 py-3 px-4 text-center">
                                             @php
-                                                $statusColors = [
-                                                    'selesai' => 'bg-green-100 text-green-700',
-                                                    'batal' => 'bg-red-100 text-red-700',
-                                                    'pending' => 'bg-yellow-100 text-yellow-700',
-                                                    'terjadwal' => 'bg-gray-100 text-gray-700',
-                                                ];
-                                                $class = $statusColors[$row->status] ?? 'bg-gray-100 text-gray-700';
+                                                // Semua status menggunakan style yang sama (abu-abu/hitam)
+                                                // Tidak ada lagi bg-green, bg-red, atau bg-yellow
+                                                $commonStyle = 'bg-gray-100 text-gray-800 border border-gray-300';
                                             @endphp
                                             <span
-                                                class="{{ $class }} py-1 px-3 rounded-full text-xs font-bold uppercase">
+                                                class="{{ $commonStyle }} py-1 px-3 rounded-full text-xs font-bold uppercase">
                                                 {{ ucfirst($row->status) }}
                                             </span>
                                         </td>
@@ -140,7 +138,7 @@
                         </table>
                     </div>
 
-                    {{-- RINGKASAN / SUMMARY --}}
+                    {{-- RINGKASAN / SUMMARY (WARNA TEKS DIHAPUS) --}}
                     <div class="mt-8 flex justify-end">
                         <div class="w-full md:w-1/3 bg-gray-50 p-4 rounded-lg border border-gray-200">
                             <h3 class="text-lg font-bold text-gray-800 mb-3 border-b pb-2">Ringkasan Kinerja</h3>
@@ -151,15 +149,18 @@
                                 </tr>
                                 <tr>
                                     <td class="py-1 text-gray-600">Selesai</td>
-                                    <td class="py-1 font-bold text-green-600 text-right">{{ $totalSelesai }}</td>
+                                    {{-- Mengubah text-green-600 menjadi text-gray-800 --}}
+                                    <td class="py-1 font-bold text-gray-800 text-right">{{ $totalSelesai }}</td>
                                 </tr>
                                 <tr>
                                     <td class="py-1 text-gray-600">Dibatalkan</td>
-                                    <td class="py-1 font-bold text-red-600 text-right">{{ $totalBatal }}</td>
+                                    {{-- Mengubah text-red-600 menjadi text-gray-800 --}}
+                                    <td class="py-1 font-bold text-gray-800 text-right">{{ $totalBatal }}</td>
                                 </tr>
                                 <tr class="border-t border-gray-300 mt-2">
                                     <td class="py-2 font-bold text-gray-800 pt-3">Persentase Kehadiran</td>
-                                    <td class="py-2 font-bold text-blue-600 text-right pt-3">
+                                    {{-- Mengubah text-blue-600 menjadi text-gray-800 --}}
+                                    <td class="py-2 font-bold text-gray-800 text-right pt-3">
                                         {{ $totalSesi > 0 ? round(($totalSelesai / $totalSesi) * 100) : 0 }}%
                                     </td>
                                 </tr>
@@ -169,7 +170,6 @@
 
                     {{-- FOOTER LAPORAN --}}
                     <div class="mt-12 text-right">
-                        {{-- Menggunakan Translated Format juga di Footer agar konsisten --}}
                         <p class="text-gray-600 text-sm">Bandung, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
                         <div class="h-16"></div>
                         <p class="font-bold text-gray-800 border-t border-gray-400 inline-block min-w-[200px] pt-2">
