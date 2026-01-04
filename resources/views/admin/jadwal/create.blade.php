@@ -131,7 +131,7 @@
                                     <div class="ml-3 text-sm">
                                         <label for="generate_bulan" class="font-medium text-gray-700">Generate Jadwal
                                             Otomatis untuk 1 Bulan?</label>
-                                        <p class="text-gray-500">Jika dicentang, sistem akan membuat 8 jadwal.</p>
+                                        <p class="text-gray-500">Jika dicentang, sistem akan membuat 8 jadwal periode 1 bulan.</p>
                                     </div>
                                 </div>
                             </div>

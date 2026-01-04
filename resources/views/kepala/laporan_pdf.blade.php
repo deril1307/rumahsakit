@@ -85,14 +85,15 @@
 
         /* Status Colors (Optional, might not show on all PDF readers) */
         .status-selesai {
-            color: green;
-            font-weight: bold;
+            color: inherit;
+            font-weight: normal;
         }
 
         .status-batal {
-            color: red;
-            font-weight: bold;
+            color: inherit;
+            font-weight: normal;
         }
+
     </style>
 </head>
 
