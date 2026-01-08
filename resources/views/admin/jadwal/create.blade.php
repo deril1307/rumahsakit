@@ -153,8 +153,6 @@
             </div>
         </div>
     </div>
-
-    {{-- SCRIPT OTOMATISASI JENIS TERAPI --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const terapisSelect = document.getElementById('user_id');

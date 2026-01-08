@@ -32,14 +32,10 @@
         @endif
         <div class="max-w-7xl mx-auto p-6 lg:p-8 flex flex-col items-center justify-center">
 
-            {{-- ============================================= --}}
-            {{-- == KODE BARU DIMULAI == --}}
-            {{-- ============================================= --}}
-
             {{-- Logo RS Al-Islam --}}
             <div class="mb-8">
                 <img src="{{ asset('img/RS-Al-Islam-Bandung.webp') }}" alt="Logo RS Al-Islam Bandung"
-                    class="h-40 mx-auto">
+                    class="h-40 ">
             </div>
 
             {{-- Judul Proyek --}}
