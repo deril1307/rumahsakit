@@ -62,8 +62,38 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $user->email }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{ ucfirst($user->roles->pluck('name')->join(', ')) }}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex flex-wrap gap-1.5">
+                                                @forelse ($user->roles as $role)
+                                                    @php
+                                                        $rName = strtolower($role->name);
+                                                        if (str_contains($rName, 'admin')) {
+                                                            $badgeStyle = 'bg-purple-50 text-purple-700 border-purple-200 ring-1 ring-purple-500/20';
+                                                            $dotStyle = 'bg-purple-500';
+                                                        } elseif (str_contains($rName, 'kepala')) {
+                                                            $badgeStyle = 'bg-blue-50 text-blue-700 border-blue-200 ring-1 ring-blue-500/20';
+                                                            $dotStyle = 'bg-blue-500';
+                                                        } elseif (str_contains($rName, 'terapis')) {
+                                                            $badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-1 ring-emerald-500/20';
+                                                            $dotStyle = 'bg-emerald-500';
+                                                        } elseif (str_contains($rName, 'pasien')) {
+                                                            $badgeStyle = 'bg-amber-50 text-amber-700 border-amber-200 ring-1 ring-amber-500/20';
+                                                            $dotStyle = 'bg-amber-500';
+                                                        } else {
+                                                            $badgeStyle = 'bg-gray-50 text-gray-700 border-gray-200 ring-1 ring-gray-500/20';
+                                                            $dotStyle = 'bg-gray-400';
+                                                        }
+                                                    @endphp
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border {{ $badgeStyle }}">
+                                                        <span class="w-1.5 h-1.5 rounded-full {{ $dotStyle }}"></span>
+                                                        {{ ucfirst($role->name) }}
+                                                    </span>
+                                                @empty
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-50 text-gray-500 border border-gray-200">
+                                                        Tanpa Role
+                                                    </span>
+                                                @endforelse
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             @if ($user->hasRole('admin'))

@@ -230,9 +230,20 @@
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $terapis->no_telp ?? '-' }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $terapis->status == 'Aktif' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200' }} border">
-                                                        {{ $terapis->status }}
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    @php
+                                                        $stTerapis = strtolower($terapis->status);
+                                                        if ($stTerapis === 'aktif') {
+                                                            $badgeStyleT = 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-1 ring-emerald-500/20';
+                                                            $dotStyleT = 'bg-emerald-500';
+                                                        } else {
+                                                            $badgeStyleT = 'bg-rose-50 text-rose-700 border-rose-200 ring-1 ring-rose-500/20';
+                                                            $dotStyleT = 'bg-rose-500';
+                                                        }
+                                                    @endphp
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border {{ $badgeStyleT }}">
+                                                        <span class="w-1.5 h-1.5 rounded-full {{ $dotStyleT }}"></span>
+                                                        {{ ucfirst($terapis->status) }}
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

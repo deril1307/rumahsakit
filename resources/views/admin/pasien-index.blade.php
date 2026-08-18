@@ -256,9 +256,24 @@
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {{ $pasien->no_telp }}
                                                 </td>
-                                                {{-- STATUS BOLD & NETRAL --}}
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {{ $pasien->status }}
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    @php
+                                                        $st = strtolower($pasien->status);
+                                                        if ($st === 'aktif') {
+                                                            $badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-1 ring-emerald-500/20';
+                                                            $dotStyle = 'bg-emerald-500';
+                                                        } elseif ($st === 'nonaktif') {
+                                                            $badgeStyle = 'bg-rose-50 text-rose-700 border-rose-200 ring-1 ring-rose-500/20';
+                                                            $dotStyle = 'bg-rose-500';
+                                                        } else {
+                                                            $badgeStyle = 'bg-gray-50 text-gray-700 border-gray-200 ring-1 ring-gray-500/20';
+                                                            $dotStyle = 'bg-gray-400';
+                                                        }
+                                                    @endphp
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border {{ $badgeStyle }}">
+                                                        <span class="w-1.5 h-1.5 rounded-full {{ $dotStyle }}"></span>
+                                                        {{ ucfirst($pasien->status) }}
+                                                    </span>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     <div class="flex space-x-2">
